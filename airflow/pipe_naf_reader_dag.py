@@ -1,11 +1,13 @@
 from datetime import datetime, timedelta
 import os
 import json
+import re
 
 from airflow import DAG
 from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.sensors.base_sensor_operator import BaseSensorOperator
+from airflow.utils.decorators import apply_defaults
 
 from airflow_ext.gfw import config as config_tools
 from airflow_ext.gfw.models import DagFactory
@@ -69,7 +71,7 @@ class NAFReaderDagFactory(DagFactory):
             raise ValueError('Unsupported schedule interval {}'.format(self.schedule_interval))
 
         config = self.config
-        name = self.config['name']
+        name = self.country['name']
         dag_id='{}.{}'.format(dag_id, name)
 
         with DAG(dag_id, schedule_interval=self.schedule_interval, default_args=self.default_args) as dag:
@@ -93,7 +95,7 @@ class NAFReaderDagFactory(DagFactory):
                     '{name} '
                     '{gcs_source} '
                     '{gcs_csv_output} '
-                    '{bq_output} '
+                    '{bq_output} '.format(**self.country) + 
                     '{ds}'.format(**config),
                 name = 'naf_reader.{}'.format(name),
                 task_id = "naf-reader-task",
@@ -102,10 +104,10 @@ class NAFReaderDagFactory(DagFactory):
                 dag = dag
             )
 
-            dag >> naf_reader >> source_exists
+            dag >> source_exists >> naf_reader
 
             return dag
 
-country_configurations = json.loads(config_tools.load_config(pipeline)['configurations'])
+country_configurations = json.loads(config_tools.load_config(PIPELINE)['configurations'])
 for country_config in country_configurations:
     naf_reader_daily_dag = NAFReaderDagFactory(country_config).build(dag_id='{}_daily'.format(PIPELINE))
