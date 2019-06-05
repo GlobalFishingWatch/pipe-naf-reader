@@ -84,6 +84,8 @@ class NAFParser():
                 logging.error("Unable to convert NAF message to csv row at {}".format(stripped_line))
                 #if it is not valid just exclude it.
                 pass
+            except:
+                pass
 
 #-------------- MAIN RECEPTION --------------------
 
