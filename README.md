@@ -22,6 +22,10 @@ Need to configure the Airflow Variable configurations like this
 }
 ```
 
+**Important**
+- The field `name` must start and end with an alphanumeric character, could have a `-` as separator.
+
+
 # Example of manual execution
 
 ```bash
