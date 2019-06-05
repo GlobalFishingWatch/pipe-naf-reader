@@ -98,7 +98,7 @@ class NAFReaderDagFactory(DagFactory):
                     '{bq_output}'.format(**self.country),
                     '{ds}'.format(**config)
                 ],
-                name = 'naf_reader.{}'.format(name),
+                name = 'naf-reader-{}'.format(name),
                 task_id = "naf-reader-task",
                 get_logs = True,
                 in_cluster = True if os.getenv('KUBERNETES_SERVICE_HOST') else False,
