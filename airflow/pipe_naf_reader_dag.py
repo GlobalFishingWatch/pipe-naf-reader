@@ -90,13 +90,14 @@ class NAFReaderDagFactory(DagFactory):
             naf_reader = KubernetesPodOperator(
                 namespace = os.getenv('K8_NAMESPACE'),
                 image = '{docker_image}'.format(**config),
-                cmds = './scripts/run.sh '
-                    'naf_reader_daily '
-                    '{name} '
-                    '{gcs_source} '
-                    '{gcs_csv_output} '
-                    '{bq_output} '.format(**self.country) + 
-                    '{ds}'.format(**config),
+                cmds = ['./scripts/run.sh',
+                    'naf_reader_daily',
+                    '{name}'.format(**self.country),
+                    '{gcs_source}'.format(**self.country),
+                    '{gcs_csv_output}'.format(**self.country),
+                    '{bq_output}'.format(**self.country),
+                    '{ds}'.format(**config)
+                ],
                 name = 'naf_reader.{}'.format(name),
                 task_id = "naf-reader-task",
                 get_logs = True,
