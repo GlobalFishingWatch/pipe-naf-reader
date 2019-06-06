@@ -90,7 +90,7 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 echo "Converting NAF messages to csv format"
-cat ${LOCAL_NAF_FILE} | python -m pipe_naf_reader.naf_parser > ${LOCAL_CSV_FILE}
+cat ${LOCAL_NAF_FILE} | python -m pipe_naf_reader.naf_parser --name ${NAME} > ${LOCAL_CSV_FILE}
 if [ "$?" -ne 0 ]; then
   echo "  Unable to convert records from NAF to CSV format"
   display_usage
@@ -117,12 +117,22 @@ echo "  Uploaded CSV file to ${GCS_CSV_FILE}"
 echo "Uploads CSV file in remote location ${GCS_CSV_FILE}"
 YYYYMMDD=$(yyyymmdd ${DS})
 BQ_PATH=${BQ_OUTPUT}_${YYYYMMDD}
-bq load --autodetect \
+FIXED_SCHEMA=${ASSETS}/${NAME}-schema.json
+AUTODETECT_SCHEMA="--autodetect"
+SCHEMA=""
+if [ -e "${FIXED_SCHEMA}" ]
+then
+  SCHEMA=${FIXED_SCHEMA}
+  AUTODETECT_SCHEMA=""
+  echo "  Reading customized schema found in ${SCHEMA} disabling the AUTODETECTION"
+fi
+bq load ${AUTODETECT_SCHEMA} \
   --field_delimiter "," \
   --skip_leading_rows 1 \
   --source_format=CSV \
   ${BQ_PATH} \
-  "${GCS_CSV_FILE}"
+  "${GCS_CSV_FILE}" \
+  ${SCHEMA}
 if [ "$?" -ne 0 ]; then
   echo "  Unable to upload to BigQuery ${BQ_PATH}"
   display_usage

@@ -27,11 +27,13 @@ The first line of the CSV will be:
 
 """
 from datetime import datetime
+import argparse
 import csv
+import json
 import logging
+import os.path
 import sys
 import time
-import argparse
 
 class NAFParser():
 
@@ -67,9 +69,26 @@ class NAFParser():
     #    except ValueError:
     #        return raw_float
 
-    def process(self, input_stream, output_stream):
-        # with open(output_file, "wb+") as f:
+    def _loads_customized_schema(self, name, output_stream):
         csv_writer = None
+        #Reads custom schema in case it exists
+        customized_schema_path = './assets/{}-schema.json'.format(name)
+        if os.path.isfile(customized_schema_path):
+            header = []
+            with open(customized_schema_path) as customized_schema:
+                schema_fields = json.load(customized_schema)
+                for schema_field in schema_fields:
+                    header.append(schema_field['name'])
+            csv_writer = csv.DictWriter(output_stream, fieldnames=header, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            csv_writer.writeheader()
+            logging.info("  Reading the headers from customized schema {}".format(customized_schema_path))
+        return csv_writer
+
+
+    def process(self, name, input_stream, output_stream):
+        # with open(output_file, "wb+") as f:
+        csv_writer = self._loads_customized_schema(name, output_stream)
+
         for line in input_stream:
             stripped_line = line.strip()
             try:
@@ -78,7 +97,8 @@ class NAFParser():
                 if csv_writer is None:
                     csv_writer = csv.DictWriter(output_stream, fieldnames=header, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     csv_writer.writeheader()
-                csv_writer.writerow(row)
+                if row:
+                    csv_writer.writerow(row)
             except Exception as err:
                 logging.error(err)
                 logging.error("Unable to convert NAF message to csv row at {}".format(stripped_line))
@@ -92,6 +112,7 @@ class NAFParser():
 if __name__ == '__main__':
     # start_time = time.time()
     parser = argparse.ArgumentParser(description='Parses NAF messages uploads to GCS and BQ.')
+    parser.add_argument('--name', help='The country name.', required=True)
     parser.add_argument('--input_stream', help='NAF message input', required=False if not sys.stdin.isatty() else True)
     parser.add_argument('--output_stream', help='CSV file output', required=False)
     args = parser.parse_args()
