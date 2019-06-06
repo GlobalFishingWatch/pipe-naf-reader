@@ -66,13 +66,16 @@ class NAFReaderDagFactory(DagFactory):
         super(NAFReaderDagFactory, self).__init__(pipeline=pipeline, **kwargs)
         self.country = country
 
+    def get_dag_id_by_country(self, prefix, country_name):
+        return '{}.{}'.format(prefix, country_name)
+
     def build(self, dag_id):
         if self.schedule_interval != '@daily':
             raise ValueError('Unsupported schedule interval {}'.format(self.schedule_interval))
 
         config = self.config
         name = self.country['name']
-        dag_id='{}.{}'.format(dag_id, name)
+        dag_id=self.get_dag_id_by_country(dag_id, name)
 
         with DAG(dag_id, schedule_interval=self.schedule_interval, default_args=self.default_args) as dag:
 
@@ -109,6 +112,8 @@ class NAFReaderDagFactory(DagFactory):
 
             return dag
 
-country_configurations = json.loads(config_tools.load_config(PIPELINE)['configurations'])
+country_configurations = config_tools.load_config(PIPELINE)['configurations']
 for country_config in country_configurations:
-    naf_reader_daily_dag = NAFReaderDagFactory(country_config).build(dag_id='{}_daily'.format(PIPELINE))
+    reader = NAFReaderDagFactory(country_config)
+    dag_id = '{}_daily'.format(PIPELINE)
+    globals()[reader.get_dag_id_by_country(dag_id, country_config['name'])]= reader.build(dag_id=dag_id)
