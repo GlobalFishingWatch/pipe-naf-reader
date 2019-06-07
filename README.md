@@ -8,22 +8,44 @@ Need to configure the Airflow Variable configurations like this
 
 ```json
 {
-  "configurations": [{
-    "name": "panama",
-    "gcs_source": "gs://vms-gfw/panama/real-time-naf",
-    "gcs_csv_output": "gs://vms-gfw/panama/naf-to-csv",
-    "bq_output": "VMS_Panama.raw_naf_messages"
-  }, {
-    "name": "chile",
-    "gcs_source": "gs://vms-gfw/chile/real-time-naf",
-    "gcs_csv_output": "gs://vms-gfw/chile/naf-to-csv",
-    "bq_output": "VMS_Chile.raw_naf_messages"
-  }]
+  "configurations": [
+    {
+      "bq_output": "scratch_matias.naf_panama", 
+      "gcs_csv_output": "gs://scratch-matias/test/panama/naf_to_csv", 
+      "gcs_source": "gs://scratch-matias/test/panama-raw-data/real-time-naf", 
+      "name": "panama"
+    }, 
+    {
+      "bq_output": "scratch_matias.naf_chile_aquaculture", 
+      "gcs_csv_output": "gs://scratch-matias/test/chile-aquaculture/naf_to_csv", 
+      "gcs_source": "gs://scratch-matias/test/chile-raw-data/chile-raw-data-aquaculture/aquaculture", 
+      "name": "chile-aquaculture"
+    }, 
+    {
+      "bq_output": "scratch_matias.naf_chile_artesanales", 
+      "gcs_csv_output": "gs://scratch-matias/test/chile-artesanales/naf_to_csv", 
+      "gcs_source": "gs://scratch-matias/test/chile-raw-data/artesanales", 
+      "name": "chile-artesanales"
+    }, 
+    {
+      "bq_output": "scratch_matias.naf_chile_industriales", 
+      "gcs_csv_output": "gs://scratch-matias/test/chile-industriales/naf_to_csv", 
+      "gcs_source": "gs://scratch-matias/test/chile-raw-data/industriales", 
+      "name": "chile-industriales"
+    }, 
+    {
+      "bq_output": "scratch_matias.naf_chile_transportadoras", 
+      "gcs_csv_output": "gs://scratch-matias/test/chile-transportadoras/naf_to_csv", 
+      "gcs_source": "gs://scratch-matias/test/chile-raw-data/transportadoras", 
+      "name": "chile-transportadoras"
+    }
+  ]
 }
 ```
 
 **Important**
 - The field `name` must start and end with an alphanumeric character, could have a `-` as separator.
+- The schema will be placed in `assets` folder. The script will try to search for one that has the name of the country as a prefix and in case it exists will be used, in other case the autodetect option will be enabled.
 
 
 # Example of manual execution
