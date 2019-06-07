@@ -1,0 +1,80 @@
+[
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "AD",
+    "description": "The name of the sender (ex. PAN for Panama, FR for France)."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "FR",
+    "description": ""
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "TM",
+    "description": "The transmission method used."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "NA",
+    "description": "The vessel name."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "IR",
+    "description": "The internal registry."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "XR",
+    "description": "The IMO number (the letter of the radio sometimes is repeated for local boats, because these do not have IMO number)."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "DA",
+    "description": "The date of the message (YYMMDD)."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "TI",
+    "description": "The time of the message (hh:mm)."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "LT",
+    "description": "The latitude where the vessel is placed."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "LG",
+    "description": "The longitude where the vessel is placed."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "SP",
+    "description": "The speed of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "CO",
+    "description": "The course of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "FS",
+    "description": "The flag of the vessel."
+  }
+]
