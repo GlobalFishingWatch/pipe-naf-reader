@@ -10,5 +10,7 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ### Added
 
+## 0.0.1 - (2019-06-11)
+
 * [GlobalFishingWatch/GFW-Tasks#1032](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1032)
   Implement NAF message parser DAG
