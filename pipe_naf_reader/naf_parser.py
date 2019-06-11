@@ -57,18 +57,6 @@ class NAFParser():
     def normalize_value(self, label, value):
         return value
 
-    #def _normalize_date(raw_date):
-    #    return datetime.strptime(raw_date, '%y%m%d').strftime('%Y-%m-%d')
-
-    #def _normalize_float(raw_float):
-    #    try:
-    #        #Finds double in string
-    #        return float(re.findall('\d+[\.|,]?\d*', raw_float)[0].replace(',','.') if type(raw_float)==str else raw_float)
-    #    except IndexError:
-    #        return raw_float
-    #    except ValueError:
-    #        return raw_float
-
     def _loads_customized_schema(self, name, output_stream):
         csv_writer = None
         #Reads custom schema in case it exists
