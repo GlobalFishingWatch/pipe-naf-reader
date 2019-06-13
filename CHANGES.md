@@ -10,6 +10,11 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ### Added
 
+* [GlobalFishingWatch/GFW-Tasks#1063](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1063)
+  Process NAF messages and generate a Partitioned Table with them
+
+### Added
+
 ## 0.0.1 - (2019-06-11)
 
 * [GlobalFishingWatch/GFW-Tasks#1032](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1032)

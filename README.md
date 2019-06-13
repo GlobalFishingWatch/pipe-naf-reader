@@ -8,35 +8,35 @@ Need to configure the Airflow Variable configurations like this
 
 ```json
 {
-  "configurations": [
-    {
-      "bq_output": "scratch_matias.naf_panama", 
-      "gcs_csv_output": "gs://scratch-matias/test/panama/naf_to_csv", 
-      "gcs_source": "gs://scratch-matias/test/panama-raw-data/real-time-naf", 
+  "configurations": [{
+      "bq_output": "scratch_matias.naf_panama",
+      "gcs_csv_output": "gs://scratch-matias/test/panama/naf_to_csv",
+      "gcs_source": "gs://scratch-matias/test/panama-raw-data/real-time-naf",
+      "bq_partitioned_output": "scratch_matias.raw_panama_naf_processed_partitioned",
       "name": "panama"
-    }, 
-    {
-      "bq_output": "scratch_matias.naf_chile_aquaculture", 
-      "gcs_csv_output": "gs://scratch-matias/test/chile-aquaculture/naf_to_csv", 
-      "gcs_source": "gs://scratch-matias/test/chile-raw-data/chile-raw-data-aquaculture/aquaculture", 
+    }, {
+      "bq_output": "scratch_matias.naf_chile_aquaculture",
+      "gcs_csv_output": "gs://scratch-matias/test/chile-aquaculture/naf_to_csv",
+      "gcs_source": "gs://scratch-matias/test/chile-raw-data/chile-raw-data-aquaculture/aquaculture",
+      "bq_partitioned_output": "scratch_matias.raw_chile_aquaculture_naf_processed_partitioned",
       "name": "chile-aquaculture"
-    }, 
-    {
-      "bq_output": "scratch_matias.naf_chile_artesanales", 
-      "gcs_csv_output": "gs://scratch-matias/test/chile-artesanales/naf_to_csv", 
-      "gcs_source": "gs://scratch-matias/test/chile-raw-data/artesanales", 
+    }, {
+      "bq_output": "scratch_matias.naf_chile_artesanales",
+      "gcs_csv_output": "gs://scratch-matias/test/chile-artesanales/naf_to_csv",
+      "gcs_source": "gs://scratch-matias/test/chile-raw-data/artesanales",
+      "bq_partitioned_output": "scratch_matias.raw_chile_artesanales_naf_processed_partitioned",
       "name": "chile-artesanales"
-    }, 
-    {
-      "bq_output": "scratch_matias.naf_chile_industriales", 
-      "gcs_csv_output": "gs://scratch-matias/test/chile-industriales/naf_to_csv", 
-      "gcs_source": "gs://scratch-matias/test/chile-raw-data/industriales", 
+    }, {
+      "bq_output": "scratch_matias.naf_chile_industriales",
+      "gcs_csv_output": "gs://scratch-matias/test/chile-industriales/naf_to_csv",
+      "gcs_source": "gs://scratch-matias/test/chile-raw-data/industriales",
+      "bq_partitioned_output": "scratch_matias.raw_chile_industriales_naf_processed_partitioned",
       "name": "chile-industriales"
-    }, 
-    {
-      "bq_output": "scratch_matias.naf_chile_transportadoras", 
-      "gcs_csv_output": "gs://scratch-matias/test/chile-transportadoras/naf_to_csv", 
-      "gcs_source": "gs://scratch-matias/test/chile-raw-data/transportadoras", 
+    }, {
+      "bq_output": "scratch_matias.naf_chile_transportadoras",
+      "gcs_csv_output": "gs://scratch-matias/test/chile-transportadoras/naf_to_csv",
+      "gcs_source": "gs://scratch-matias/test/chile-raw-data/transportadoras",
+      "bq_partitioned_output": "scratch_matias.raw_chile_transportadoras_naf_processed_partitioned",
       "name": "chile-transportadoras"
     }
   ]
@@ -52,3 +52,6 @@ Need to configure the Airflow Variable configurations like this
 
 ```bash
 $ ./scripts/naf_reader_daily.sh "panama" "gs://scratch-matias/test/attachments" "gs://scratch-matias/test/panama/naf_to_csv" "scratch_matias.naf_panama" "2019-04-17"```
+
+```bash
+$ ./scripts/generate_partitioned_table_daily.sh panama "scratch_matias.naf_panama" "scratch_matias.raw_naf_processed_partitioned" "2019-06-07"```
