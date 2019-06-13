@@ -5,6 +5,7 @@ import re
 from airflow import DAG
 from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
+from airflow.operators.sensors import TimeDeltaSensor
 from airflow.sensors.base_sensor_operator import BaseSensorOperator
 from airflow.utils.decorators import apply_defaults
 
@@ -78,6 +79,12 @@ class NAFReaderDagFactory(DagFactory):
 
         with DAG(dag_id, schedule_interval=self.schedule_interval, default_args=self.default_args) as dag:
 
+            wait_a_day = TimeDeltaSensor(
+                task_id="wait_a_day",
+                poke_interval=43200, #try every 12 hours
+                delta=timedelta(days=1) #we want to have a delay of 1 so we have all messages
+            )
+
             # Checks that the gcs folder exists and contains file for the current {ds}
             # Question? must be inside the k8s op
             source_bucket = re.search('(?<=gs://)[^/]*', self.country['gcs_source']).group(0)
@@ -107,7 +114,24 @@ class NAFReaderDagFactory(DagFactory):
                 dag = dag
             )
 
-            dag >> source_exists >> naf_reader
+            generate_partitioned_table = KubernetesPodOperator(
+                namespace = os.getenv('K8_NAMESPACE'),
+                image = '{docker_image}'.format(**config),
+                cmds = ['./scripts/run.sh',
+                    'generate_partitioned_table_daily',
+                    '{name}'.format(**self.country),
+                    '{bq_output}'.format(**self.country),
+                    '{bq_partitioned_output}'.format(**self.country),
+                    '{ds}'.format(**config)
+                ],
+                name = 'generate-partitioned-table-{}'.format(name),
+                task_id = "generate-partitioned-table-task",
+                get_logs = True,
+                in_cluster = True if os.getenv('KUBERNETES_SERVICE_HOST') else False,
+                dag = dag
+            )
+
+            dag >> wait_a_day >> source_exists >> naf_reader >> generate_partitioned_table
 
             return dag
 
