@@ -36,7 +36,6 @@ done
 
 YYYYMMDD=$(yyyymmdd ${DS})
 BQ_INPUT_PATH=${BQ_INPUT}_${YYYYMMDD}
-BQ_OUTPUT_PATH=${BQ_OUTPUT}_${YYYYMMDD}
 ################################################################################
 # Executes query reading the input table
 ################################################################################
@@ -46,14 +45,14 @@ SQL=$(jinja2 ${QUERY} -D source=${BQ_INPUT_PATH})
 echo "${SQL}" | bq query \
     --max_rows=0 \
     --allow_large_results \
-    --replace \
+    --append_table \
     --nouse_legacy_sql \
     --destination_schema ${ASSETS}/naf-process-${NAME}-schema.json \
-    --destination_table ${BQ_OUTPUT_PATH} \
+    --destination_table ${BQ_OUTPUT} \
     --time_partitioning_field timestamp
 
 if [ "$?" -ne 0 ]; then
-  echo "  Unable to create table ${BQ_OUTPUT_PATH}"
+  echo "  Unable to create table ${BQ_OUTPUT}"
   exit 1
 fi
 ################################################################################
@@ -62,15 +61,15 @@ fi
 TABLE_DESC=(
   "* Pipeline: ${PIPELINE} ${PIPELINE_VERSION}"
   "* Source: ${BQ_INPUT_PATH}"
-  "* Command:"
+  "* Last Command:"
   "$(basename $0)"
   "$@"
 )
 TABLE_DESC=$( IFS=$'\n'; echo "${TABLE_DESC[*]}" )
-echo "Updating table description ${BQ_OUTPUT_PATH}"
-bq update --description "${TABLE_DESC}" ${BQ_OUTPUT_PATH}
+echo "Updating table description ${BQ_OUTPUT}"
+bq update --description "${TABLE_DESC}" ${BQ_OUTPUT}
 if [ "$?" -ne 0 ]; then
-  echo "  Unable to update the description table ${BQ_OUTPUT_PATH}"
+  echo "  Unable to update the description table ${BQ_OUTPUT}"
   exit 1
 fi
-echo "  ${BQ_OUTPUT_PATH} Done."
+echo "  ${BQ_OUTPUT} Done."
