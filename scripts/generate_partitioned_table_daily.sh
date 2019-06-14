@@ -43,15 +43,6 @@ BQ_OUTPUT_PATH=${BQ_OUTPUT}_${YYYYMMDD}
 echo "Executes query reading the input table ${BQ_INPUT_PATH}"
 QUERY=${ASSETS}/naf-process-${NAME}.sql.j2
 SQL=$(jinja2 ${QUERY} -D source=${BQ_INPUT_PATH})
-# echo "${SQL}" | bq query \
-#     --max_rows=0 \ #How many rows to return in the result.
-#     --allow_large_results \ #Enables larger destination table sizes for legacy SQL queries.
-#     --replace \ #If true, erase existing contents before loading new data.
-#     --nouse_legacy_sql \ #Whether to use Legacy SQL for the query. If not set, the default value is true.
-#     # --destination_schema "timestamp:STRING,callsign:STRING,shipname:STRING,registry_number:STRING,internal_id:STRING,imo:STRING,lat:STRING,lon:STRING,speed:STRING,course:STRING,flag:STRING"
-#     --destination_table ${BQ_OUTPUT_PATH} \ #Name of destination table for query results.
-#     --time_partitioning_field timestamp #Enables time based partitioning on the table and the table will be partitioned based on the value of this field. If time based partitioning is enabled without this value, the table will be partitioned based on the loading time.
-
 echo "${SQL}" | bq query \
     --max_rows=0 \
     --allow_large_results \
