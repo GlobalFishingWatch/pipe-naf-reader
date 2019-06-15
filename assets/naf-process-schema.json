@@ -32,6 +32,12 @@
   {
     "mode": "NULLABLE",
     "type": "STRING",
+    "name": "external_id",
+    "description": "The external identification."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
     "name": "imo",
     "description": "The IMO (International Maritime Organization) assigned."
   },
