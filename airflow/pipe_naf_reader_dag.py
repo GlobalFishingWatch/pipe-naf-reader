@@ -128,7 +128,7 @@ class NAFReaderDagFactory(DagFactory):
                 task_id = "generate-partitioned-table-task",
                 get_logs = True,
                 in_cluster = True if os.getenv('KUBERNETES_SERVICE_HOST') else False,
-                dag = dag
+                dag = dag,
                 pool='k8operators_limit'
             )
 
