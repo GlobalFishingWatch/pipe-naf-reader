@@ -129,6 +129,7 @@ class NAFReaderDagFactory(DagFactory):
                 get_logs = True,
                 in_cluster = True if os.getenv('KUBERNETES_SERVICE_HOST') else False,
                 dag = dag
+                pool='k8operators_limit'
             )
 
             dag >> wait_a_day >> source_exists >> naf_reader >> generate_partitioned_table

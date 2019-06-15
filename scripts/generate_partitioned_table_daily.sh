@@ -36,18 +36,19 @@ done
 
 YYYYMMDD=$(yyyymmdd ${DS})
 BQ_INPUT_PATH=${BQ_INPUT}_${YYYYMMDD}
+COUNTRY_NAME=$(echo ${NAME} | cut -d- -f1)
 ################################################################################
 # Executes query reading the input table
 ################################################################################
 echo "Executes query reading the input table ${BQ_INPUT_PATH}"
-QUERY=${ASSETS}/naf-process-${NAME}.sql.j2
+QUERY=${ASSETS}/naf-process-${COUNTRY_NAME}.sql.j2
 SQL=$(jinja2 ${QUERY} -D source=${BQ_INPUT_PATH})
 echo "${SQL}" | bq query \
     --max_rows=0 \
     --allow_large_results \
     --append_table \
     --nouse_legacy_sql \
-    --destination_schema ${ASSETS}/naf-process-${NAME}-schema.json \
+    --destination_schema ${ASSETS}/naf-process-schema.json \
     --destination_table ${BQ_OUTPUT} \
     --time_partitioning_field timestamp
 

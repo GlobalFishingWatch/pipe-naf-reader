@@ -15,3 +15,5 @@ python $AIRFLOW_HOME/utils/set_default_variables.py \
     configurations="MUST be a valid json array containing the mapping for each country configuration."
 
 echo "Installation Complete"
+
+airflow pool --set "k8operators_limit" 6 "Number of k8opertor tasks executing concurrently."

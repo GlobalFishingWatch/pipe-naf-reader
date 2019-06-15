@@ -1,8 +1,8 @@
 SELECT
   PARSE_TIMESTAMP("%Y%m%d%k%M%S", CONCAT(DA,TI)) timestamp,
-#  RC AS callsign,
   NA AS shipname,
   IR AS internal_id,
+  XR AS external_id,
   CAST(LT AS FLOAT64) lat,
   CAST(LG AS FLOAT64) lon,
   CAST(SP AS FLOAT64) speed,
