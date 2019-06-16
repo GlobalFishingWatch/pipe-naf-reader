@@ -1,0 +1,14 @@
+SELECT
+  PARSE_TIMESTAMP("%y%m%d%k%M", CONCAT(DA,TI)) timestamp,
+  RC AS callsign,
+  NA AS shipname,
+  RN AS registry_number,
+  IR AS internal_id,
+  IF(XR=RC OR XR="N",NULL,XR) AS imo,
+  CAST(LT AS FLOAT64) lat,
+  CAST(LG AS FLOAT64) lon,
+  CAST(SP AS FLOAT64) speed,
+  CAST(CO AS FLOAT64) course,
+  FS AS flag
+FROM
+  `{{ source }}`
