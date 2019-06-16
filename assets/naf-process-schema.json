@@ -1,0 +1,74 @@
+[
+  {
+    "mode": "NULLABLE",
+    "type": "TIMESTAMP",
+    "name": "timestamp",
+    "description": "The tinestamp when the message has been received."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "callsign",
+    "description": "The callsign of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "shipname",
+    "description": "The name of the ship."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "registry_number",
+    "description": "The vessel name."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "internal_id",
+    "description": "The internal identification."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "external_id",
+    "description": "The external identification."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "imo",
+    "description": "The IMO (International Maritime Organization) assigned."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "FLOAT",
+    "name": "lat",
+    "description": "The latitude of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "FLOAT",
+    "name": "lon",
+    "description": "The longitude of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "FLOAT",
+    "name": "speed",
+    "description": "The speed of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "FLOAT",
+    "name": "course",
+    "description": "The course of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "flag",
+    "description": "The flag of the vessel."
+  }
+]
