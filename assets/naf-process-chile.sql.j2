@@ -3,6 +3,8 @@ SELECT
 -- inculdes callsign field as NULL because its needed for clustering
   NULL AS callsign,
   NA AS shipname,
+-- inculdes registry_number field as NULL because its needed for clustering
+  NULL AS registry_number,
   IR AS internal_id,
   XR AS external_id,
   CAST(LT AS FLOAT64) lat,
