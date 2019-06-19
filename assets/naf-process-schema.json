@@ -37,12 +37,6 @@
   },
   {
     "mode": "NULLABLE",
-    "type": "STRING",
-    "name": "imo",
-    "description": "The IMO (International Maritime Organization) assigned."
-  },
-  {
-    "mode": "NULLABLE",
     "type": "FLOAT",
     "name": "lat",
     "description": "The latitude of the vessel."

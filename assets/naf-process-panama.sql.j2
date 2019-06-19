@@ -4,7 +4,7 @@ SELECT
   NA AS shipname,
   RN AS registry_number,
   IR AS internal_id,
-  IF(XR=RC OR XR="N",NULL,XR) AS imo,
+  XR AS external_id,
   CAST(LT AS FLOAT64) lat,
   CAST(LG AS FLOAT64) lon,
   CAST(SP AS FLOAT64) speed,
