@@ -50,7 +50,8 @@ echo "${SQL}" | bq query \
     --nouse_legacy_sql \
     --destination_schema ${ASSETS}/naf-process-schema.json \
     --destination_table ${BQ_OUTPUT} \
-    --time_partitioning_field timestamp
+    --time_partitioning_field timestamp \
+    --clustering_fields shipname,callsign,registry_number
 
 if [ "$?" -ne 0 ]; then
   echo "  Unable to create table ${BQ_OUTPUT}"
