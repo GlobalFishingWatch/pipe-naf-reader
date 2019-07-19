@@ -90,7 +90,7 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 echo "Converting NAF messages to csv format"
-cat ${LOCAL_NAF_FILE} | python -m pipe_naf_reader.naf_parser --name ${NAME} > ${LOCAL_CSV_FILE}
+cat ${LOCAL_NAF_FILE} | python -m pipe_naf_reader.naf_parser --name ${NAME} --received ${DS} > ${LOCAL_CSV_FILE}
 if [ "$?" -ne 0 ]; then
   echo "  Unable to convert records from NAF to CSV format"
   display_usage

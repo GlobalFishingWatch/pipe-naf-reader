@@ -73,7 +73,7 @@ class NAFParser():
         return csv_writer
 
 
-    def process(self, name, input_stream, output_stream):
+    def process(self, name, received, input_stream, output_stream):
         # with open(output_file, "wb+") as f:
         csv_writer = self._loads_customized_schema(name, output_stream)
 
@@ -83,9 +83,11 @@ class NAFParser():
                 splitted = stripped_line.split('//')
                 header, row = self.parse(splitted)
                 if csv_writer is None:
+                    header.append('msg_date_received')
                     csv_writer = csv.DictWriter(output_stream, fieldnames=header, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     csv_writer.writeheader()
                 if row:
+                    row['msg_date_received'] = received
                     csv_writer.writerow(row)
             except Exception as err:
                 logging.error(err)
@@ -101,6 +103,7 @@ if __name__ == '__main__':
     # start_time = time.time()
     parser = argparse.ArgumentParser(description='Parses NAF messages uploads to GCS and BQ.')
     parser.add_argument('--name', help='The country name.', required=True)
+    parser.add_argument('--received', help='The date when the message has been received.', required=True)
     parser.add_argument('--input_stream', help='NAF message input', required=False if not sys.stdin.isatty() else True)
     parser.add_argument('--output_stream', help='CSV file output', required=False)
     args = parser.parse_args()

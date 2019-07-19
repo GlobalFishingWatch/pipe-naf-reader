@@ -76,5 +76,11 @@
     "type": "STRING",
     "name": "FS",
     "description": "The flag of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "msg_date_received",
+    "description": "The date when the message was received."
   }
 ]

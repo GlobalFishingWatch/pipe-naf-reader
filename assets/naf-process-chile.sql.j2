@@ -11,6 +11,7 @@ SELECT
   CAST(LG AS FLOAT64) lon,
   CAST(SP AS FLOAT64) speed,
   CAST(CO AS FLOAT64) course,
-  FS AS flag
+  FS AS flag,
+  msg_date_received
 FROM
   `{{ source }}`

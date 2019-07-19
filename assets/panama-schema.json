@@ -88,5 +88,11 @@
     "type": "STRING",
     "name": "RN",
     "description": ""
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "msg_date_received",
+    "description": "The date when the message was received."
   }
 ]
