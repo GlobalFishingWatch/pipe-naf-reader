@@ -83,6 +83,7 @@ echo "  Validated data saved in ${LOCAL_NAF_FILE}"
 echo "Converting NAF files to csv format"
 LOCAL_CSV_PATH=./data/csv
 LOCAL_CSV_FILE=${LOCAL_CSV_PATH}/${DS}.csv
+COUNTRY_NAME=$(echo ${NAME} | cut -d- -f1)
 echo "Creating local csv directory"
 mkdir -p ${LOCAL_CSV_PATH}
 if [ "$?" -ne 0 ]; then
@@ -90,7 +91,7 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 echo "Converting NAF messages to csv format"
-cat ${LOCAL_NAF_FILE} | python -m pipe_naf_reader.naf_parser --name ${NAME} > ${LOCAL_CSV_FILE}
+cat ${LOCAL_NAF_FILE} | python -m pipe_naf_reader.naf_parser --name ${COUNTRY_NAME} > ${LOCAL_CSV_FILE}
 if [ "$?" -ne 0 ]; then
   echo "  Unable to convert records from NAF to CSV format"
   display_usage
@@ -117,7 +118,6 @@ echo "  Uploaded CSV file to ${GCS_CSV_FILE}"
 echo "Uploads CSV file in remote location ${GCS_CSV_FILE}"
 YYYYMMDD=$(yyyymmdd ${DS})
 BQ_PATH=${BQ_OUTPUT}_${YYYYMMDD}
-COUNTRY_NAME=$(echo ${NAME} | cut -d- -f1)
 FIXED_SCHEMA=${ASSETS}/${COUNTRY_NAME}-schema.json
 AUTODETECT_SCHEMA="--autodetect"
 SCHEMA=""
