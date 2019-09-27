@@ -117,7 +117,8 @@ echo "  Uploaded CSV file to ${GCS_CSV_FILE}"
 echo "Uploads CSV file in remote location ${GCS_CSV_FILE}"
 YYYYMMDD=$(yyyymmdd ${DS})
 BQ_PATH=${BQ_OUTPUT}_${YYYYMMDD}
-FIXED_SCHEMA=${ASSETS}/${NAME}-schema.json
+COUNTRY_NAME=$(echo ${NAME} | cut -d- -f1)
+FIXED_SCHEMA=${ASSETS}/${COUNTRY_NAME}-schema.json
 AUTODETECT_SCHEMA="--autodetect"
 SCHEMA=""
 if [ -e "${FIXED_SCHEMA}" ]
