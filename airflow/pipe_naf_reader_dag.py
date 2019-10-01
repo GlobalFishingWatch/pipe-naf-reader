@@ -105,7 +105,8 @@ class NAFReaderDagFactory(DagFactory):
                     '{gcs_source}'.format(**self.country),
                     '{gcs_csv_output}'.format(**self.country),
                     '{bq_output}'.format(**self.country),
-                    '{ds}'.format(**config)
+                    '{ds}'.format(**config),
+                    '{schema_file_name}'.format(**config)
                 ],
                 name = 'naf-reader-{}'.format(name),
                 task_id = "naf-reader-task",
@@ -124,7 +125,7 @@ class NAFReaderDagFactory(DagFactory):
                     '{bq_partitioned_output}'.format(**self.country),
                     '{ds}'.format(**config)
                 ],
-                name = 'generate-partitioned-table-{}'.format(name),
+                name = 'naf-reader-generate-partitioned-table-{}'.format(name),
                 task_id = "generate-partitioned-table-task",
                 get_logs = True,
                 in_cluster = True if os.getenv('KUBERNETES_SERVICE_HOST') else False,

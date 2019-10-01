@@ -60,7 +60,7 @@ class NAFParser():
     def _loads_customized_schema(self, name, output_stream):
         csv_writer = None
         #Reads custom schema in case it exists
-        customized_schema_path = './assets/{}-schema.json'.format(name)
+        customized_schema_path = './assets/{}.json'.format(name)
         if os.path.isfile(customized_schema_path):
             header = []
             with open(customized_schema_path) as customized_schema:

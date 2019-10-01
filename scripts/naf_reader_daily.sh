@@ -11,7 +11,8 @@ ARGS=( NAME \
   GCS_SOURCE \
   GCS_CSV_OUTPUT \
   BQ_OUTPUT \
-  DS )
+  DS \
+  SCHEMA_FILE_NAME )
 
 echo -e "\nRunning:\n${PROCESS}.sh $@ \n"
 
@@ -22,6 +23,7 @@ display_usage() {
   echo -e "GCS_CSV_OUTPUT: Folder where to store the CSVs output result from the NAF parser (Format expected gs://<BUCKET>/<OBJECT>).\n"
   echo -e "BQ_OUTPUT: BigQuery dataset and table where will be stored the output (Format expected <DATASET>.<TABLE>).\n"
   echo -e "DS: The date expressed with the following format YYYY-MM-DD. To be used for request.\n"
+  echo -e "SCHEMA_FILE_NAME: The schema file name to be appropriate for that country (<NAME_OF_FILE>).\n"
 }
 
 if [[ $# -ne ${#ARGS[@]} ]]
@@ -83,7 +85,6 @@ echo "  Validated data saved in ${LOCAL_NAF_FILE}"
 echo "Converting NAF files to csv format"
 LOCAL_CSV_PATH=./data/csv
 LOCAL_CSV_FILE=${LOCAL_CSV_PATH}/${DS}.csv
-COUNTRY_NAME=$(echo ${NAME} | cut -d- -f1)
 echo "Creating local csv directory"
 mkdir -p ${LOCAL_CSV_PATH}
 if [ "$?" -ne 0 ]; then
@@ -91,7 +92,7 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 echo "Converting NAF messages to csv format"
-cat ${LOCAL_NAF_FILE} | python -m pipe_naf_reader.naf_parser --name ${COUNTRY_NAME} > ${LOCAL_CSV_FILE}
+cat ${LOCAL_NAF_FILE} | python -m pipe_naf_reader.naf_parser --name ${SCHEMA_FILE_NAME} > ${LOCAL_CSV_FILE}
 if [ "$?" -ne 0 ]; then
   echo "  Unable to convert records from NAF to CSV format"
   display_usage
@@ -118,7 +119,7 @@ echo "  Uploaded CSV file to ${GCS_CSV_FILE}"
 echo "Uploads CSV file in remote location ${GCS_CSV_FILE}"
 YYYYMMDD=$(yyyymmdd ${DS})
 BQ_PATH=${BQ_OUTPUT}_${YYYYMMDD}
-FIXED_SCHEMA=${ASSETS}/${COUNTRY_NAME}-schema.json
+FIXED_SCHEMA=${ASSETS}/${SCHEMA_FILE_NAME}.json
 AUTODETECT_SCHEMA="--autodetect"
 SCHEMA=""
 if [ -e "${FIXED_SCHEMA}" ]
