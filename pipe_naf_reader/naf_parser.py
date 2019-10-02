@@ -60,7 +60,7 @@ class NAFParser():
     def _loads_customized_schema(self, name, output_stream):
         csv_writer = None
         #Reads custom schema in case it exists
-        customized_schema_path = './assets/{}-schema.json'.format(name)
+        customized_schema_path = './assets/{}.json'.format(name)
         if os.path.isfile(customized_schema_path):
             header = []
             with open(customized_schema_path) as customized_schema:
@@ -91,9 +91,10 @@ class NAFParser():
                 logging.error(err)
                 logging.error("Unable to convert NAF message to csv row at {}".format(stripped_line))
                 #if it is not valid just exclude it.
-                pass
+                exit(1)
             except:
-                pass
+                logging.error('There was an error parsing the line <{}>', stripped_line)
+                exit(1)
 
 #-------------- MAIN RECEPTION --------------------
 

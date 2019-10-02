@@ -32,6 +32,12 @@
   {
     "mode": "NULLABLE",
     "type": "STRING",
+    "name": "RC",
+    "description": "The callsign of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
     "name": "XR",
     "description": "The IMO number (the letter of the radio sometimes is repeated for local boats, because these do not have IMO number)."
   },
