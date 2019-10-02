@@ -12,7 +12,7 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## 0.0.4 - (2019-10-01)
 
-* [GlobalFishingWatch/GFW-Tasks#1063](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1063): Adds
+* [GlobalFishingWatch/GFW-Tasks#1140](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1140): Adds
   the callsign as new column for chilean schema, they started sending it from 9/26.
 
 ### Changes
