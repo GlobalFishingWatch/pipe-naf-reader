@@ -13,31 +13,36 @@ Need to configure the Airflow Variable configurations like this
       "gcs_csv_output": "gs://scratch-matias/test/panama/naf_to_csv",
       "gcs_source": "gs://scratch-matias/test/panama-raw-data/real-time-naf",
       "bq_partitioned_output": "scratch_matias.raw_panama_naf_processed_partitioned",
-      "name": "panama"
+      "name": "panama",
+      "schema_file_name": "panama-schema"
     }, {
       "bq_output": "scratch_matias.naf_chile_aquaculture",
       "gcs_csv_output": "gs://scratch-matias/test/chile-aquaculture/naf_to_csv",
       "gcs_source": "gs://scratch-matias/test/chile-raw-data/chile-raw-data-aquaculture/aquaculture",
       "bq_partitioned_output": "scratch_matias.raw_chile_aquaculture_naf_processed_partitioned",
-      "name": "chile-aquaculture"
+      "name": "chile-aquaculture",
+      "schema_file_name": "chile-schema"
     }, {
       "bq_output": "scratch_matias.naf_chile_artesanales",
       "gcs_csv_output": "gs://scratch-matias/test/chile-artesanales/naf_to_csv",
       "gcs_source": "gs://scratch-matias/test/chile-raw-data/artesanales",
       "bq_partitioned_output": "scratch_matias.raw_chile_artesanales_naf_processed_partitioned",
-      "name": "chile-artesanales"
+      "name": "chile-artesanales",
+      "schema_file_name": "chile-schema"
     }, {
       "bq_output": "scratch_matias.naf_chile_industriales",
       "gcs_csv_output": "gs://scratch-matias/test/chile-industriales/naf_to_csv",
       "gcs_source": "gs://scratch-matias/test/chile-raw-data/industriales",
       "bq_partitioned_output": "scratch_matias.raw_chile_industriales_naf_processed_partitioned",
-      "name": "chile-industriales"
+      "name": "chile-industriales",
+      "schema_file_name": "chile-schema"
     }, {
       "bq_output": "scratch_matias.naf_chile_transportadoras",
       "gcs_csv_output": "gs://scratch-matias/test/chile-transportadoras/naf_to_csv",
       "gcs_source": "gs://scratch-matias/test/chile-raw-data/transportadoras",
       "bq_partitioned_output": "scratch_matias.raw_chile_transportadoras_naf_processed_partitioned",
-      "name": "chile-transportadoras"
+      "name": "chile-transportadoras",
+      "schema_file_name": "chile-schema"
     }
   ]
 }
