@@ -93,7 +93,8 @@ class NAFParser():
                 #if it is not valid just exclude it.
                 exit(1)
             except:
-                pass
+                logging.error('There was an error parsing the line <{}>', stripped_line)
+                exit(1)
 
 #-------------- MAIN RECEPTION --------------------
 
