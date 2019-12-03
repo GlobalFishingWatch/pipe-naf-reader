@@ -3,7 +3,6 @@ import os
 import re
 
 from airflow import DAG
-from airflow.contrib.hooks.gcs_hook import GoogleCloudStorageHook
 from airflow.contrib.operators.kubernetes_pod_operator import KubernetesPodOperator
 from airflow.operators.sensors import TimeDeltaSensor
 from airflow.sensors.base_sensor_operator import BaseSensorOperator
@@ -14,50 +13,6 @@ from airflow_ext.gfw.models import DagFactory
 
 
 PIPELINE = "pipe_naf_reader"
-
-class GoogleCloudStoragePrefixSensor(BaseSensorOperator):
-    """
-    Checks for the existence of a file in Google Cloud Storage.
-    """
-    template_fields = ('bucket', 'prefix')
-    ui_color = '#f0eee4'
-
-    @apply_defaults
-    def __init__(
-            self,
-            bucket,
-            prefix,
-            google_cloud_conn_id='google_cloud_storage_default',
-            delegate_to=None,
-            *args,
-            **kwargs):
-
-        super(GoogleCloudStoragePrefixSensor, self).__init__(*args, **kwargs)
-        self.bucket = bucket
-        self.prefix = prefix
-        self.google_cloud_conn_id = google_cloud_conn_id
-        self.delegate_to = delegate_to
-
-    def poke(self, context):
-        self.log.info('Sensor checks existence of : %s, %s', self.bucket, self.prefix)
-        hook = GoogleCloudStorageHook(
-            google_cloud_storage_conn_id=self.google_cloud_conn_id,
-            delegate_to=self.delegate_to)
-        return len(hook.list(self.bucket, prefix=self.prefix)) > 0
-
-
-def source_exists_sensor(bucket, prefix, dag):
-    return GoogleCloudStoragePrefixSensor(
-        dag=dag,
-        task_id='source_exists',
-        bucket=bucket,
-        prefix=prefix,
-        poke_interval=10,   # check every 10 seconds for a minute
-        timeout=60,
-        retries=24*7,       # retry once per hour for a week
-        retry_delay=timedelta(minutes=60),
-        retry_exponential_backoff=False
-    )
 
 
 class NAFReaderDagFactory(DagFactory):
@@ -73,6 +28,7 @@ class NAFReaderDagFactory(DagFactory):
         if self.schedule_interval != '@daily':
             raise ValueError('Unsupported schedule interval {}'.format(self.schedule_interval))
 
+        self.config['source_path'] = self.country['gcs_source']
         config = self.config
         name = self.country['name']
         dag_id=self.get_dag_id_by_country(dag_id, name)
@@ -83,17 +39,6 @@ class NAFReaderDagFactory(DagFactory):
                 task_id="wait_a_day",
                 poke_interval=43200, #try every 12 hours
                 delta=timedelta(days=1) #we want to have a delay of 1 so we have all messages
-            )
-
-            # Checks that the gcs folder exists and contains file for the current {ds}
-            # Question? must be inside the k8s op
-            source_bucket = re.search('(?<=gs://)[^/]*', self.country['gcs_source']).group(0)
-            naf_gcs_path = re.search('(?<=gs://)[^/]*/(.*)', self.country['gcs_source']).group(1)
-            naf_gcs_path = '{}/{ds}'.format(naf_gcs_path, **config)
-            source_exists = source_exists_sensor(
-                bucket=source_bucket,
-                prefix=naf_gcs_path,
-                dag=dag
             )
 
             naf_reader = KubernetesPodOperator(
@@ -133,7 +78,8 @@ class NAFReaderDagFactory(DagFactory):
                 pool='k8operators_limit'
             )
 
-            dag >> wait_a_day >> source_exists >> naf_reader >> generate_partitioned_table
+            for sensor in self.source_sensors(dag):
+                dag >> wait_a_day >> sensor >> naf_reader >> generate_partitioned_table
 
             return dag
 
