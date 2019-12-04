@@ -28,7 +28,7 @@ class NAFReaderDagFactory(DagFactory):
         if self.schedule_interval != '@daily':
             raise ValueError('Unsupported schedule interval {}'.format(self.schedule_interval))
 
-        self.config['source_path'] = self.country['gcs_source']
+        self.config['source_gcs_path'] = self.country['gcs_source']
         config = self.config
         name = self.country['name']
         dag_id=self.get_dag_id_by_country(dag_id, name)
@@ -78,7 +78,7 @@ class NAFReaderDagFactory(DagFactory):
                 pool='k8operators_limit'
             )
 
-            for sensor in self.source_sensors(dag):
+            for sensor in self.source_gcs_sensors(dag):
                 dag >> wait_a_day >> sensor >> naf_reader >> generate_partitioned_table
 
             return dag
