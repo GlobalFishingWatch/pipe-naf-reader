@@ -6,7 +6,7 @@ WORKDIR /opt/project
 
 # Airflow version upgrade to 1.10
 ENV SLUGIFY_USES_TEXT_UNIDECODE=yes
-ENV CLOUD_SDK_VERSION 248.0.0
+ENV CLOUD_SDK_VERSION 255.0.0
 
 # Install and update pip
 # Pin the version because pip>=10.0 does not support the --download flag  which is required for dataflow

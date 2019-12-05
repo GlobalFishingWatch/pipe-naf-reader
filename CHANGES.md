@@ -8,37 +8,38 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## v0.0.5 - 2019-12-05
+
 ### Added
 
-## 0.0.4 - (2019-10-01)
+* [GFW-Tasks#1164](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1164): Adds
+  the source_sensor functionality from DagFactory.
 
-* [GlobalFishingWatch/GFW-Tasks#1063](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1063): Adds
+## v0.0.4 - 2019-10-01
+
+### Added
+
+* [GFW-Tasks#1140](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1140): Adds
   the callsign as new column for chilean schema, they started sending it from 9/26.
 
-### Changes
+## v0.0.3 - 2019-06-21
 
-## 0.0.3 - (2019-06-21)
+### Changed
 
-* [GlobalFishingWatch/GFW-Tasks#1063](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1063): Changes
+* [GFW-Tasks#1063](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1063): Changes
   on clumn, uses external_id field instead of imo field.
 
+## v0.0.2 - 2019-06-18
+
 ### Added
 
-## 0.0.2 - (2019-06-11)
-
-* [GlobalFishingWatch/GFW-Tasks#1063](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1063)
+* [GFW-Tasks#1063](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1063): Adds
+  processor of NAF messages and generate a Partitioned Table with them.
   Normalizes the partitioned table fields.
 
-### Added
-
-## 0.0.2 - (2019-06-18)
-
-* [GlobalFishingWatch/GFW-Tasks#1063](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1063)
-  Process NAF messages and generate a Partitioned Table with them
+## v0.0.1 - 2019-06-11
 
 ### Added
 
-## 0.0.1 - (2019-06-11)
-
-* [GlobalFishingWatch/GFW-Tasks#1032](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1032)
-  Implement NAF message parser DAG
+* [GFW-Tasks#1032](https://github.com/GlobalFishingWatch/GFW-Tasks/issues/1032): Adds
+  implementation of NAF message parser DAG.
