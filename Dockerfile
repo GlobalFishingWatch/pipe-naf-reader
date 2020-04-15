@@ -33,6 +33,7 @@ VOLUME ["/root/.config"]
 COPY . /opt/project
 
 # install
+RUN pip install -r requirements.txt
 RUN pip install -e .
 
 # Setup the entrypoint for quickly executing the pipelines
