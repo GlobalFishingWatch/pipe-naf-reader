@@ -8,6 +8,21 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## v1.0.0 - 2020-04-13
+
+### Added
+
+* [GlobalFishingWatch/gfw-eng-tasks#55](https://github.com/GlobalFishingWatch/gfw-eng-tasks/issues/55): Adds
+    support for python 3.
+    Increase the google sdk version.
+    Pipe-tools version increase to `v3.1.1`.
+
+### Changed
+
+* [GlobalFishingWatch/gfw-eng-tasks#55](https://github.com/GlobalFishingWatch/gfw-eng-tasks/issues/55): Changes
+    TimeDeltaSensor object by using end_date parameter when building the DAG.
+    KubernetesOperatr instantation by using the build_docker_task inherited method.
+
 ## v0.0.5 - 2019-12-05
 
 ### Added

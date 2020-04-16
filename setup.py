@@ -4,16 +4,10 @@
 Setup script for pipe-naf-reader
 """
 
-import codecs
-import os
-
-import setuptools
 from setuptools import find_packages
 from setuptools import setup
 
-import subprocess
-from distutils.command.build import build as _build
-
+import codecs
 
 package = __import__('pipe_naf_reader')
 
@@ -24,7 +18,7 @@ DEPENDENCIES = [
     "pytz",
     "udatetime",
     "newlinejson",
-    "pipe-tools==2.0.0",
+    "pipe-tools==3.1.1",
     "jinja2-cli",
     "statistics"
 ]
@@ -50,4 +44,3 @@ setup(
     zip_safe=True,
     dependency_links=DEPENDENCY_LINKS
 )
-
