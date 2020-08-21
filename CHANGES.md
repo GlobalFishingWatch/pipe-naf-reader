@@ -10,6 +10,18 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## v1.0.0 - 2020-04-13
 
+### Removed
+
+* [Data Pipeline/PIPELINE-67](https://globalfishingwatch.atlassian.net/browse/PIPELINE-67): Removes
+
+### Changed
+
+* [Data Pipeline/PIPELINE-67](https://globalfishingwatch.atlassian.net/browse/PIPELINE-67): Changes
+  * the pipe-tools version to `v3.1.2`.
+  * the Google SDK version to `306.0.0`.
+
+## v1.0.0 - 2020-04-13
+
 ### Added
 
 * [GlobalFishingWatch/gfw-eng-tasks#55](https://github.com/GlobalFishingWatch/gfw-eng-tasks/issues/55): Adds
