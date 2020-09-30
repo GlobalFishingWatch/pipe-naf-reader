@@ -14,13 +14,8 @@ package = __import__('pipe_naf_reader')
 
 DEPENDENCIES = [
     "pytest",
-    "nose",
-    "pytz",
-    "udatetime",
-    "newlinejson",
-    "pipe-tools==3.1.1",
-    "jinja2-cli",
-    "statistics"
+    "pipe-tools==3.1.2",
+    "jinja2-cli"
 ]
 
 with codecs.open('README.md', encoding='utf-8') as f:

@@ -8,6 +8,27 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## v1.0.1 - 2020-09-30
+
+### Added
+
+* [Data Pipeline/PIPELINE-67](https://globalfishingwatch.atlassian.net/browse/PIPELINE-67): Adds
+  * Tests to cover naf_reader process.
+  * Documents the python code.
+
+### Changed
+
+* [Data Pipeline/PIPELINE-67](https://globalfishingwatch.atlassian.net/browse/PIPELINE-67): Changes
+  * the pipe-tools version to `v3.1.2`.
+  * the Google SDK version to `312.0.0`.
+
+### Removed
+
+* [Data Pipeline/PIPELINE-67](https://globalfishingwatch.atlassian.net/browse/PIPELINE-67): Removes
+  * Airflow variable `temp_bucket` that was not used.
+  * Airflow variable `pipeline_bucket` that was not used.
+  * Airflow variable `pipeline_dataset` that was not used.
+
 ## v1.0.0 - 2020-04-13
 
 ### Added
