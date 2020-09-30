@@ -17,8 +17,7 @@ install:
 - docker-compose build
 
 script:
-- docker-compose --version
-- docker-compose run py.test tests
+- docker-compose run py.test
 
 notifications:
   slack:
