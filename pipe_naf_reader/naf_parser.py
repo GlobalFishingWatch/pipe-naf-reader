@@ -35,8 +35,16 @@ import os.path
 import sys
 import time
 
+"""Process a NAF input strams and converts it to a CSV file."""
 class NAFParser():
 
+    """
+    Receives a list of entries and returns a header and row array.
+
+    :@param entries: list of lines of CSV file.
+    :@type entries: list.
+    :@returns: the header list and the row dict.
+    """
     def parse(self, entries):
         start=False
         end=False
@@ -54,9 +62,27 @@ class NAFParser():
                         start=True
         return header,row
 
+    """
+    Normalizes the value.
+
+    :@param label: The label or column name.
+    :@type label: str.
+    :@param value: The value of the row.
+    :@type value: str.
+    :@return: the normalized value.
+    """
     def normalize_value(self, label, value):
         return value
 
+    """
+    Loads the customized schema and prepares the csv writer object.
+
+    :@param name: The country name.
+    :@type name: str.
+    :@param output_stream: The stream where to output the CSV info.
+    :@type output_stream: str.
+    :@return: The csv writer object.
+    """
     def _loads_customized_schema(self, name, output_stream):
         csv_writer = None
         #Reads custom schema in case it exists
@@ -73,6 +99,16 @@ class NAFParser():
         return csv_writer
 
 
+    """
+    Processes the NAF input_stream and outputs the CSV stream.
+
+    :@param name: The country name.
+    :@type name: str.
+    :@param input_stream: The NAF data or stdin.
+    :@type input_stream: file.
+    :@param output_stream: The CSV file or stdout.
+    :@type output_stream: file.
+    """
     def process(self, name, input_stream, output_stream):
         # with open(output_file, "wb+") as f:
         csv_writer = self._loads_customized_schema(name, output_stream)
