@@ -45,13 +45,13 @@
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "DA",
-    "description": "The date of the message (YYMMDD)."
+    "description": "The date of the message (YYYYMMDD)."
   },
   {
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "TI",
-    "description": "The time of the message (hh:mm)."
+    "description": "The time of the message (hh:mm:ss) in UTC"
   },
   {
     "mode": "NULLABLE",
