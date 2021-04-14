@@ -4,6 +4,8 @@ SELECT
   NA AS shipname,
   IR AS internal_id,
   XR AS external_id,
+  -- inculdes registry_number field as NULL because its needed for clustering
+  CAST(NULL AS STRING) AS registry_number,
   CAST(LT AS FLOAT64) lat,
   CAST(LG AS FLOAT64) lon,
   CAST(SP AS FLOAT64) speed,
