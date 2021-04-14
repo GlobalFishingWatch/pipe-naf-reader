@@ -82,5 +82,17 @@
     "type": "STRING",
     "name": "FS",
     "description": "The flag of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "IOR",
+    "description": "Unknown Field."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "IPS",
+    "description": "Unknown Field."
   }
 ]
