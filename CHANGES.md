@@ -8,6 +8,13 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## v2.0.0 - 2021-04-19
+
+### Added
+
+* [Data Pipeline/PIPELINE-246](https://globalfishingwatch.atlassian.net/browse/PIPELINE-246): Adds
+  * NAF process to ingest Data from Costa Rica.
+
 ## v1.0.1 - 2020-09-30
 
 ### Added
