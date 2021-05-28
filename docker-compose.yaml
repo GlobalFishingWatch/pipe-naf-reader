@@ -7,25 +7,10 @@ services:
       - ".:/opt/project"
       - "gcp:/root/.config/"
 
-  gcloud:
-    image: gfw/pipe-naf-reader
-    build: .
-    entrypoint: gcloud
-    volumes:
-      - "gcp:/root/.config/"
-
-  py.test:
+  test:
     image: gfw/pipe-naf-reader
     build: .
     entrypoint: py.test
-    volumes:
-      - ".:/opt/project"
-      - "gcp:/root/.config/"
-
-  bash:
-    image: gfw/pipe-naf-reader
-    build: .
-    entrypoint: /bin/bash
     volumes:
       - ".:/opt/project"
       - "gcp:/root/.config/"

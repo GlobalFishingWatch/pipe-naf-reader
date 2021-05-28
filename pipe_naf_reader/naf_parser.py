@@ -87,8 +87,8 @@ class NAFParser():
         csv_writer = None
         #Reads custom schema in case it exists
         customized_schema_path = './assets/{}.json'.format(name)
+        header = []
         if os.path.isfile(customized_schema_path):
-            header = []
             with open(customized_schema_path) as customized_schema:
                 schema_fields = json.load(customized_schema)
                 for schema_field in schema_fields:
@@ -96,7 +96,7 @@ class NAFParser():
             csv_writer = csv.DictWriter(output_stream, fieldnames=header, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             csv_writer.writeheader()
             logging.info("  Reading the headers from customized schema {}".format(customized_schema_path))
-        return csv_writer
+        return csv_writer, header
 
 
     """
@@ -111,7 +111,7 @@ class NAFParser():
     """
     def process(self, name, input_stream, output_stream):
         # with open(output_file, "wb+") as f:
-        csv_writer = self._loads_customized_schema(name, output_stream)
+        csv_writer, expectedHeader = self._loads_customized_schema(name, output_stream)
 
         for line in input_stream:
             stripped_line = line.strip()
@@ -119,9 +119,11 @@ class NAFParser():
                 splitted = stripped_line.split('//')
                 header, row = self.parse(splitted)
                 if csv_writer is None:
-                    csv_writer = csv.DictWriter(output_stream, fieldnames=header, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                    csv_writer = csv.DictWriter(output_stream, fieldnames=(expectedHeader if (expectedHeader!=[]) else header), delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
                     csv_writer.writeheader()
                 if row:
+                    if expectedHeader != []:
+                        list(map(lambda y: row.pop(y,None), filter(lambda x: x not in expectedHeader, header)))
                     csv_writer.writerow(row)
             except Exception as err:
                 logging.error(err)
