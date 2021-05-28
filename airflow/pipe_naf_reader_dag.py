@@ -1,4 +1,5 @@
 from airflow import DAG
+from airflow.contrib.operators.bigquery_check_operator import BigQueryCheckOperator
 
 from airflow_ext.gfw import config as config_tools
 from airflow_ext.gfw.models import DagFactory
@@ -60,13 +61,23 @@ class NAFReaderDagFactory(DagFactory):
                              '{ds}'.format(**config)]
             })
 
+            threshold_to_achieve = BigQueryCheckOperator(
+                task_id='threshold_to_achieve',
+                sql='SELECT if( count(*) < {threshold}, 0, count(*) ) FROM `{bq_partitioned_output}`'.format(**self.country),
+                use_legacy_sql=False,
+                retries=3,
+                retry_delay=timedelta(minutes=30),
+                max_retry_delay=timedelta(minutes=30),
+                on_failure_callback=config_tools.failure_callback_gfw
+            )
+
             for sensor in self.source_gcs_sensors(dag):
-                dag >> sensor >> naf_reader >> generate_partitioned_table
+                dag >> sensor >> naf_reader >> generate_partitioned_table >> threshold_to_achive
 
             return dag
 
 country_configurations = config_tools.load_config(PIPELINE)['configurations']
 for country_config in country_configurations:
     reader = NAFReaderDagFactory(country_config)
-    dag_id = '{}_daily'.format(PIPELINE)
+    dag_id = f'{PIPELINE}_daily'
     globals()[reader.get_dag_id_by_country(dag_id, country_config['name'])]= reader.build(dag_id=dag_id)
