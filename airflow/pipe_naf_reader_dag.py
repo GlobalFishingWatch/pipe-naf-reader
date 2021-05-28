@@ -72,7 +72,7 @@ class NAFReaderDagFactory(DagFactory):
             )
 
             for sensor in self.source_gcs_sensors(dag):
-                dag >> sensor >> naf_reader >> generate_partitioned_table >> threshold_to_achive
+                dag >> sensor >> naf_reader >> generate_partitioned_table >> threshold_to_achieve
 
             return dag
 
