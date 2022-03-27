@@ -14,6 +14,7 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 * [Data Pipeline/PIPELINE-851](https://globalfishingwatch.atlassian.net/browse/PIPELINE-851): Adds
   support for fields that come empty, `field1///field2/value2` meaning `value1=None`.
+  image `gfw-bash-pipeline` as base in Dockerfile.
 
 ## v3.0.0 - 2021-05-27
 
