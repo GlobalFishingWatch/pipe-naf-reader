@@ -1,0 +1,16 @@
+SELECT
+  PARSE_TIMESTAMP("%Y%m%d%k%M%S", CONCAT(DA,TI)) timestamp,
+-- inculdes callsign field as NULL because its needed for clustering
+  RC AS callsign,
+  NA AS shipname,
+-- inculdes registry_number field as NULL because its needed for clustering
+  CAST(NULL AS STRING) AS registry_number,
+  IR AS internal_id,
+  XR AS external_id,
+  CAST(LT AS FLOAT64) lat,
+  CAST(LG AS FLOAT64) lon,
+  CAST(SP AS FLOAT64) speed,
+  CAST(CO AS FLOAT64) course,
+  FS AS flag
+FROM
+  `{{ source }}`
