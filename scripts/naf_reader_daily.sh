@@ -4,7 +4,6 @@ THIS_SCRIPT_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )"
 ASSETS=${THIS_SCRIPT_DIR}/../assets
 LIB=${THIS_SCRIPT_DIR}/../pipe_naf_reader
 source ${THIS_SCRIPT_DIR}/pipeline.sh
-source pipe-tools-utils
 
 PROCESS=$(basename $0 .sh)
 ARGS=( NAME \
@@ -117,8 +116,7 @@ echo "  Uploaded CSV file to ${GCS_CSV_FILE}"
 # Uploads from GCS to Big Query
 ################################################################################
 echo "Uploads CSV file in remote location ${GCS_CSV_FILE}"
-YYYYMMDD=$(yyyymmdd ${DS})
-BQ_PATH=${BQ_OUTPUT}_${YYYYMMDD}
+BQ_PATH=${BQ_OUTPUT}_${DS//-/}
 FIXED_SCHEMA=${ASSETS}/${SCHEMA_FILE_NAME}.json
 AUTODETECT_SCHEMA="--autodetect"
 SCHEMA=""
