@@ -8,6 +8,13 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## v3.0.2 - 2023-01-27
+
+### Added
+
+* [Data Pipeline/PIPELINE-1128](https://globalfishingwatch.atlassian.net/browse/PIPELINE-1128): Adds
+  support for ingest `NAF` messages coming from Papua New Guinea `PNG`.
+
 ## v3.0.1 - 2022-03-27
 
 ### Added

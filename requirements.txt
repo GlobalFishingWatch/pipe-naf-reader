@@ -1,3 +1,2 @@
 jinja2-cli==0.8.2
-pipe-tools @ https://codeload.github.com/GlobalFishingWatch/pipe-tools/tar.gz/v3.2.0
 pytest==6.2.4
