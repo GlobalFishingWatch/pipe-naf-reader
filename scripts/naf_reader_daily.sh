@@ -42,14 +42,14 @@ GCS_DATE_SOURCE=${GCS_SOURCE}/${DS}
 ################################################################################
 # Download files locally
 ################################################################################
-echo "Downloading records from source ${GCS_DATE_SOURCE} to local disk"
 LOCAL_RAW_NAF_PATH=./data/raw_naf
+echo "Downloading records from source ${GCS_DATE_SOURCE} to local disk ${LOCAL_RAW_NAF_PATH}"
 mkdir -p ${LOCAL_RAW_NAF_PATH}
 if [ "$?" -ne 0 ]; then
   echo "  Unable to create local RAW_NAF directory"
   exit 1
 fi
-gsutil -m cp -r ${GCS_DATE_SOURCE} ${LOCAL_RAW_NAF_PATH}
+gsutil -m -o GSUtil:parallel_process_count=1 -o GSUtil:parallel_thread_count=24 cp -n -r  ${GCS_DATE_SOURCE} ${LOCAL_RAW_NAF_PATH}
 if [ "$?" -ne 0 ]; then
   echo "  Unable to download records data locally from ${GCS_DATE_SOURCE}"
   display_usage
