@@ -2,7 +2,7 @@
 Micro pipeline that parses the NAF messages from countries that handles vessel information with NAF format
 """
 
-__version__ = '3.0.2'
+__version__ = '4.0.0'
 __author__ = 'Matias Piano'
 __email__ = 'matias@globalfishingwatch.org'
 __source__ = 'https://github.com/GlobalFishingWatch/pipe-naf-reader'
