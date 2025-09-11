@@ -21,49 +21,49 @@
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "NA",
-    "description": "The vessel name."
+    "description": "Name of the vessel"
   },
   {
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "IR",
-    "description": "The internal registry."
+    "description": "Unique vessel number attributed by the flag-State"
   },
   {
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "RC",
-    "description": "The callsign of the vessel."
+    "description": "International Radio Call Sign (IRCS) of the observed/sighted vessel"
   },
   {
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "XR",
-    "description": "The IMO number (the letter of the radio sometimes is repeated for local boats, because these do not have IMO number)."
+    "description": "Side (hull) number of registration of the vessel"
   },
   {
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "DA",
-    "description": "The date of the message (YYMMDD)."
+    "description": "Date of reported event (year, month, day in UTC)"
   },
   {
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "TI",
-    "description": "The time of the message (hh:mm)."
+    "description": "Time of reported event (hour, minute in UTC)"
   },
   {
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "LT",
-    "description": "The latitude where the vessel is placed."
+    "description": "Latitude expressed in degrees and decimals (WGS-84)"
   },
   {
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "LG",
-    "description": "The longitude where the vessel is placed."
+    "description": "Longitude expressed in degrees and decimals (WGS-84)"
   },
   {
     "mode": "NULLABLE",
@@ -82,5 +82,29 @@
     "type": "STRING",
     "name": "FS",
     "description": "The flag of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "RN",
+    "description": "Record number: Serial number of retransmission of the message/report by the FMC (annual count)"
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "IM",
+    "description": "IMO ship identification number."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "ID",
+    "description": "ID number for the transmitter/platform."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "SQ",
+    "description": "Serial number of the message/report as transmitted by the vessel (annual count)."
   }
 ]

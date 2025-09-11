@@ -64,5 +64,23 @@
     "type": "STRING",
     "name": "flag",
     "description": "The flag of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "imo",
+    "description": "The IMO number of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "transmitter_id",
+    "description": "The transmitter ID of the vessel."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "sequence_number",
+    "description": "The sequence number of the message sent by the vessel (annual count)."
   }
 ]
