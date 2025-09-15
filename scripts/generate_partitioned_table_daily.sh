@@ -36,6 +36,8 @@ done
 
 YYYYMMDD=$(yyyymmdd ${DS})
 BQ_INPUT_PATH=${BQ_INPUT}_${YYYYMMDD}
+# if double-dot is not present replace only the first dot with double-dot
+BQ_OUTPUT_DOUBLEDOT=$(if [[ ${BQ_OUTPUT} != *":"*  ]]; then echo ${BQ_OUTPUT/./:}; else echo ${BQ_OUTPUT}; fi)
 COUNTRY_NAME=$(echo ${NAME} | cut -d- -f1)
 ################################################################################
 # Executes query reading the input table
@@ -49,12 +51,12 @@ echo "${SQL}" | bq query \
     --append_table \
     --nouse_legacy_sql \
     --destination_schema ${ASSETS}/naf-process-schema.json \
-    --destination_table ${BQ_OUTPUT} \
+    --destination_table ${BQ_OUTPUT_DOUBLEDOT} \
     --time_partitioning_field timestamp \
     --clustering_fields shipname,callsign,registry_number
 
 if [ "$?" -ne 0 ]; then
-  echo "  Unable to create table ${BQ_OUTPUT}"
+  echo "  Unable to create table ${BQ_OUTPUT_DOUBLEDOT}"
   exit 1
 fi
 ################################################################################
@@ -68,10 +70,10 @@ TABLE_DESC=(
   "$@"
 )
 TABLE_DESC=$( IFS=$'\n'; echo "${TABLE_DESC[*]}" )
-echo "Updating table description ${BQ_OUTPUT}"
-bq update --description "${TABLE_DESC}" ${BQ_OUTPUT}
+echo "Updating table description ${BQ_OUTPUT_DOUBLEDOT}"
+bq update --description "${TABLE_DESC}" ${BQ_OUTPUT_DOUBLEDOT}
 if [ "$?" -ne 0 ]; then
-  echo "  Unable to update the description table ${BQ_OUTPUT}"
+  echo "  Unable to update the description table ${BQ_OUTPUT_DOUBLEDOT}"
   exit 1
 fi
-echo "  ${BQ_OUTPUT} Done."
+echo "  ${BQ_OUTPUT_DOUBLEDOT} Done."
