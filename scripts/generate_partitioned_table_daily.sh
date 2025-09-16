@@ -36,8 +36,14 @@ done
 
 YYYYMMDD=$(yyyymmdd ${DS})
 BQ_INPUT_PATH=${BQ_INPUT}_${YYYYMMDD}
-# if double-dot is not present replace only the first dot with double-dot
-BQ_OUTPUT_DOUBLEDOT=$(if [[ ${BQ_OUTPUT} != *":"*  ]]; then echo ${BQ_OUTPUT/./:}; else echo ${BQ_OUTPUT}; fi)
+BQ_PATTERN="^[a-zA-Z0-9_\-]+[\.:][a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+$"
+if [[ "${BQ_OUTPUT}" =~ ${BQ_PATTERN} ]]; then
+  # if double-dot is not present replace only the first dot with double-dot
+  BQ_OUTPUT_DOUBLEDOT=$(if [[ ${BQ_OUTPUT} != *":"*  ]]; then echo ${BQ_OUTPUT/./:}; else echo ${BQ_OUTPUT}; fi)
+else
+  echo "Error passing the BQ_OUTPUT it should match the following pattern (${BQ_PATTERN})."
+  exit 1
+fi
 COUNTRY_NAME=$(echo ${NAME} | cut -d- -f1)
 ################################################################################
 # Executes query reading the input table
