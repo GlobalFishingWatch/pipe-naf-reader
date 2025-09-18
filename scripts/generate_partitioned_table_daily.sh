@@ -3,7 +3,6 @@
 THIS_SCRIPT_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )"
 ASSETS=${THIS_SCRIPT_DIR}/../assets
 source ${THIS_SCRIPT_DIR}/pipeline.sh
-source pipe-tools-utils
 
 PROCESS=$(basename $0 .sh)
 ARGS=( NAME  \
@@ -34,8 +33,7 @@ for index in ${!ARGS[*]}; do
   declare "${ARGS[$index]}"="${arg_values[$index]}"
 done
 
-YYYYMMDD=$(yyyymmdd ${DS})
-BQ_INPUT_PATH=${BQ_INPUT}_${YYYYMMDD}
+BQ_INPUT_PATH=${BQ_INPUT}_${DS//-/}
 BQ_PATTERN="^[a-zA-Z0-9_\-]+[\.:][a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+$"
 if [[ "${BQ_OUTPUT}" =~ ${BQ_PATTERN} ]]; then
   # if colon punctuation is not present replace only the first dot with colon punctuation.

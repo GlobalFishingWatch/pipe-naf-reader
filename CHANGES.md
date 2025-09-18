@@ -8,6 +8,28 @@ Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to
 
 ## [Unreleased]
 
+## v3.0.3 - 2024-03-25
+
+### Changed
+
+* [Data Pipeline/PIPELINE-1899](https://globalfishingwatch.atlassian.net/browse/PIPELINE-1899): Fix 
+  `gsutil cp` hangs on many small files when running in parallel.
+
+## v3.0.2 - 2023-01-27
+
+### Added
+
+* [Data Pipeline/PIPELINE-1128](https://globalfishingwatch.atlassian.net/browse/PIPELINE-1128): Adds
+  support for ingest `NAF` messages coming from Papua New Guinea `PNG`.
+
+## v3.0.1 - 2022-03-27
+
+### Added
+
+* [Data Pipeline/PIPELINE-851](https://globalfishingwatch.atlassian.net/browse/PIPELINE-851): Adds
+  support for fields that come empty, `field1///field2/value2` meaning `value1=None`.
+  image `gfw-bash-pipeline` as base in Dockerfile.
+
 ## v3.0.0 - 2021-05-27
 
 ### Changed

@@ -116,7 +116,11 @@ class NAFParser():
         for line in input_stream:
             stripped_line = line.strip()
             try:
-                splitted = stripped_line.split('//')
+                if len(stripped_line.split('///'))>1:
+                    logging.warn(f"There are empty fields in line {stripped_line}")
+                    splitted = stripped_line.rsplit('//')
+                else:
+                    splitted = stripped_line.split('//')
                 header, row = self.parse(splitted)
                 if csv_writer is None:
                     csv_writer = csv.DictWriter(output_stream, fieldnames=(expectedHeader if (expectedHeader!=[]) else header), delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)

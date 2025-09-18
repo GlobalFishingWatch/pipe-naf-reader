@@ -1,60 +1,25 @@
-master: [![Build Status](https://travis-ci.org/GlobalFishingWatch/pipe-naf-reader.svg?branch=master)](https://travis-ci.org/GlobalFishingWatch/pipe-naf-reader)
-develop: [![Build Status](https://travis-ci.org/GlobalFishingWatch/pipe-naf-reader.svg?branch=develop)](https://travis-ci.org/GlobalFishingWatch/pipe-naf-reader/branches)
-
 # pipe-NAF-reader
-Chile and Panama will be sending us NAF messages, we need a DAG pipeline that given a file that contains one NAF file per line it outputs a CSV with a header line and the parsed messages so we can then upload that file to GCS and BQ.
+Countries that currently send `NAF` messages to Global Fishing Watch.
+- Chile.
+- Panama.
+- Costa Rica.
+- Papua New Guinea.
 
+These countries are sending us `NAF` messages, we need a DAG pipeline that given a file that contains one NAF file per line it outputs a CSV with a header line and the parsed messages so we can then upload that file to GCS and BQ.
 
-# Requirements
+This repo is responsable for reading each `NAF` message of a country and parsing it. Generate a CSV with a header and the messages to upload them to BQ.
 
-Need to configure the Airflow Variable configurations like this
+The NAF Parser generates a CSV that contains all positional messages for all messages in a source folder. The CSV needs to have a first row the name of the attributes.
 
-```json
-{
-  "configurations": [{
-      "bq_output": "scratch_matias.naf_panama",
-      "gcs_csv_output": "gs://scratch-matias/test/panama/naf_to_csv",
-      "gcs_source": "gs://scratch-matias/test/panama-raw-data/real-time-naf",
-      "bq_partitioned_output": "scratch_matias.raw_panama_naf_processed_partitioned",
-      "name": "panama",
-      "schema_file_name": "panama-schema",
-      "threshold": 100000
-    }, {
-      "bq_output": "scratch_matias.naf_chile_aquaculture",
-      "gcs_csv_output": "gs://scratch-matias/test/chile-aquaculture/naf_to_csv",
-      "gcs_source": "gs://scratch-matias/test/chile-raw-data/chile-raw-data-aquaculture/aquaculture",
-      "bq_partitioned_output": "scratch_matias.raw_chile_aquaculture_naf_processed_partitioned",
-      "name": "chile-aquaculture",
-      "schema_file_name": "chile-schema",
-      "threshold": 100000
-    }, {
-      "bq_output": "scratch_matias.naf_chile_artesanales",
-      "gcs_csv_output": "gs://scratch-matias/test/chile-artesanales/naf_to_csv",
-      "gcs_source": "gs://scratch-matias/test/chile-raw-data/artesanales",
-      "bq_partitioned_output": "scratch_matias.raw_chile_artesanales_naf_processed_partitioned",
-      "name": "chile-artesanales",
-      "schema_file_name": "chile-schema",
-      "threshold": 100000
-    }, {
-      "bq_output": "scratch_matias.naf_chile_industriales",
-      "gcs_csv_output": "gs://scratch-matias/test/chile-industriales/naf_to_csv",
-      "gcs_source": "gs://scratch-matias/test/chile-raw-data/industriales",
-      "bq_partitioned_output": "scratch_matias.raw_chile_industriales_naf_processed_partitioned",
-      "name": "chile-industriales",
-      "schema_file_name": "chile-schema",
-      "threshold": 100000
-    }, {
-      "bq_output": "scratch_matias.naf_chile_transportadoras",
-      "gcs_csv_output": "gs://scratch-matias/test/chile-transportadoras/naf_to_csv",
-      "gcs_source": "gs://scratch-matias/test/chile-raw-data/transportadoras",
-      "bq_partitioned_output": "scratch_matias.raw_chile_transportadoras_naf_processed_partitioned",
-      "name": "chile-transportadoras",
-      "schema_file_name": "chile-schema",
-      "threshold": 100000
-    }
-  ]
-}
-```
+The explanation of each field in a NAF format is explaned in the [defaul schema](https://github.com/GlobalFishingWatch/pipe-naf-reader/blob/master/assets/naf-default-schema.json)
+
+The parser will adjust the header related to the `NAF` message, if not will throw an error:
+For example for:
+    //SR//AD/PAN//FR/PAN//TM/POS//NA/MEGA 811//IR/47083-PEXT//RC/HP4077//XR/8523632//DA/190515//TI/1151//LT/-20.860//LG/-100.274//FS/PAN//RN/320491//ER
+
+The first line of the CSV will be:
+    AD,TM,NA,IR,RC,XR,DA,TI,LT,LG,SP,CO,FS
+
 
 **Important**
 - The field `name` must start and end with an alphanumeric character, could have a `-` as separator.
@@ -63,8 +28,11 @@ Need to configure the Airflow Variable configurations like this
 
 # Example of manual execution
 
+First step: Parse the NAF and prepare the CSV.
 ```bash
-$ ./scripts/naf_reader_daily.sh "panama" "gs://scratch-matias/test/attachments" "gs://scratch-matias/test/panama/naf_to_csv" "scratch_matias.naf_panama" "2019-04-17"```
+$ docker compose run --rm pipe_naf_reader naf_reader_daily chile-aquaculture gs://scratch_matias/real-time-naf/aquaculture gs://scratch_matias/naf_to_csv/aquaculture scratch_matias_ttl_60_days.naf_chile_aquaculture 2023-10-16 chile-schema
+```
 
+Second step: Read the CSV and upload it to BQ.
 ```bash
-$ ./scripts/generate_partitioned_table_daily.sh panama "scratch_matias.naf_panama" "scratch_matias.raw_naf_processed_partitioned" "2019-06-07"```
+$ docker compose run --rm pipe_naf_reader generate_partitioned_table_daily chile "scratch_matias_ttl_60_days.naf_chile" "scratch_matias_ttl_60_days.raw_naf_processed_partitioned" "2023-10-16"```
