@@ -34,6 +34,14 @@ for index in ${!ARGS[*]}; do
 done
 
 BQ_INPUT_PATH=${BQ_INPUT}_${DS//-/}
+BQ_PATTERN="^[a-zA-Z0-9_\-]+[\.:][a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+$"
+if [[ "${BQ_OUTPUT}" =~ ${BQ_PATTERN} ]]; then
+  # if colon punctuation is not present replace only the first dot with colon punctuation.
+  BQ_OUTPUT_COLON=$(if [[ ${BQ_OUTPUT} != *":"*  ]]; then echo ${BQ_OUTPUT/./:}; else echo ${BQ_OUTPUT}; fi)
+else
+  echo "Error passing the BQ_OUTPUT it should match the following pattern (${BQ_PATTERN})."
+  exit 1
+fi
 COUNTRY_NAME=$(echo ${NAME} | cut -d- -f1)
 ################################################################################
 # Executes query reading the input table
@@ -47,12 +55,12 @@ echo "${SQL}" | bq query \
     --append_table \
     --nouse_legacy_sql \
     --destination_schema ${ASSETS}/naf-process-schema.json \
-    --destination_table ${BQ_OUTPUT} \
+    --destination_table ${BQ_OUTPUT_COLON} \
     --time_partitioning_field timestamp \
     --clustering_fields shipname,callsign,registry_number
 
 if [ "$?" -ne 0 ]; then
-  echo "  Unable to create table ${BQ_OUTPUT}"
+  echo "  Unable to create table ${BQ_OUTPUT_COLON}"
   exit 1
 fi
 ################################################################################
@@ -66,10 +74,10 @@ TABLE_DESC=(
   "$@"
 )
 TABLE_DESC=$( IFS=$'\n'; echo "${TABLE_DESC[*]}" )
-echo "Updating table description ${BQ_OUTPUT}"
-bq update --description "${TABLE_DESC}" ${BQ_OUTPUT}
+echo "Updating table description ${BQ_OUTPUT_COLON}"
+bq update --description "${TABLE_DESC}" ${BQ_OUTPUT_COLON}
 if [ "$?" -ne 0 ]; then
-  echo "  Unable to update the description table ${BQ_OUTPUT}"
+  echo "  Unable to update the description table ${BQ_OUTPUT_COLON}"
   exit 1
 fi
-echo "  ${BQ_OUTPUT} Done."
+echo "  ${BQ_OUTPUT_COLON} Done."
