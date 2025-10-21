@@ -1,4 +1,3 @@
-version: '2'
 services:
   pipe_naf_reader:
     image: gfw/pipe-naf-reader
