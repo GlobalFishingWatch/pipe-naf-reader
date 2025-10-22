@@ -18,9 +18,9 @@ echo -e "\nRunning:\n${PROCESS}.sh $@ \n"
 display_usage() {
   echo -e "\nUsage:\n${PROCESS}.sh ${ARGS[*]}\n"
   echo -e "NAME: Name of the country that gives the NAF files.\n"
-  echo -e "GCS_SOUCE: Source of the GCS where the NAF files are stored (Format expected gs://<BUCKET>/<OBJECT>).\n"
+  echo -e "GCS_SOURCE: Source of the GCS where the NAF files are stored (Format expected gs://<BUCKET>/<OBJECT>).\n"
   echo -e "GCS_CSV_OUTPUT: Folder where to store the CSVs output result from the NAF parser (Format expected gs://<BUCKET>/<OBJECT>).\n"
-  echo -e "BQ_OUTPUT: BigQuery dataset and table where will be stored the output (Format expected <DATASET>.<TABLE>).\n"
+  echo -e "BQ_OUTPUT: BigQuery project, dataset and table where will be stored the output (Format expected <PROJECT>.<DATASET>.<TABLE>).\n"
   echo -e "DS: The date expressed with the following format YYYY-MM-DD. To be used for request.\n"
   echo -e "SCHEMA_FILE_NAME: The schema file name to be appropriate for that country (<NAME_OF_FILE>).\n"
 }
@@ -116,7 +116,15 @@ echo "  Uploaded CSV file to ${GCS_CSV_FILE}"
 # Uploads from GCS to Big Query
 ################################################################################
 echo "Uploads CSV file in remote location ${GCS_CSV_FILE}"
-BQ_PATH=${BQ_OUTPUT}_${DS//-/}
+BQ_OUTPUT_PATH=${BQ_OUTPUT}_${DS//-/}
+BQ_PATTERN="^[a-zA-Z0-9_\-]+[\.:][a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+$"
+if [[ "${BQ_OUTPUT_PATH}" =~ ${BQ_PATTERN} ]]; then
+  # if colon punctuation is not present replace only the first dot with colon punctuation.
+  BQ_OUTPUT_COLON=$(if [[ ${BQ_OUTPUT_PATH} != *":"*  ]]; then echo ${BQ_OUTPUT_PATH/./:}; else echo ${BQ_OUTPUT_PATH}; fi)
+else
+  echo "Error passing the BQ_OUTPUT it should match the following pattern (${BQ_PATTERN})."
+  exit 1
+fi
 FIXED_SCHEMA=${ASSETS}/${SCHEMA_FILE_NAME}.json
 AUTODETECT_SCHEMA="--autodetect"
 SCHEMA=""
@@ -130,12 +138,12 @@ bq load ${AUTODETECT_SCHEMA} \
   --field_delimiter "," \
   --skip_leading_rows 1 \
   --source_format=CSV \
-  ${BQ_PATH} \
+  ${BQ_OUTPUT_COLON} \
   "${GCS_CSV_FILE}" \
   ${SCHEMA}
 if [ "$?" -ne 0 ]; then
-  echo "  Unable to upload to BigQuery ${BQ_PATH}"
+  echo "  Unable to upload to BigQuery ${BQ_OUTPUT_COLON}"
   display_usage
   exit 1
 fi
-echo "  Uploaded to BigQuery in table ${BQ_PATH}"
+echo "  Uploaded to BigQuery in table ${BQ_OUTPUT_COLON}"
