@@ -5,8 +5,7 @@ ASSETS=${THIS_SCRIPT_DIR}/../assets
 source ${THIS_SCRIPT_DIR}/pipeline.sh
 
 PROCESS=$(basename $0 .sh)
-ARGS=( NAME  \
-  BQ_INPUT \
+ARGS=( BQ_INPUT \
   BQ_OUTPUT \
   DS )
 
@@ -14,7 +13,6 @@ echo -e "\nRunning:\n${PROCESS}.sh $@ \n"
 
 display_usage() {
   echo -e "\nUsage:\n${PROCESS}.sh ${ARGS[*]}\n"
-  echo -e "NAME: Name of the country that gives the NAF files.\n"
   echo -e "BQ_INPUT: BigQuery dataset and table where the input is already stored (Format expected <DATASET>.<TABLE>).\n"
   echo -e "BQ_OUTPUT: BigQuery dataset and table where will be stored the output (Format expected <DATASET>.<TABLE>).\n"
   echo -e "DS: The date expressed with the following format YYYY-MM-DD. To be used for request.\n"
@@ -42,12 +40,11 @@ else
   echo "Error passing the BQ_OUTPUT it should match the following pattern (${BQ_PATTERN})."
   exit 1
 fi
-COUNTRY_NAME=$(echo ${NAME} | cut -d- -f1)
 ################################################################################
 # Executes query reading the input table
 ################################################################################
 echo "Executes query reading the input table ${BQ_INPUT_PATH}"
-QUERY=${ASSETS}/naf-process-${COUNTRY_NAME}.sql.j2
+QUERY=${ASSETS}/naf-process.sql.j2
 SQL=$(jinja2 ${QUERY} -D source=${BQ_INPUT_PATH})
 echo "${SQL}" | bq query \
     --max_rows=0 \
