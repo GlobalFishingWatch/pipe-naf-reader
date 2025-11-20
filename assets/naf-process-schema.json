@@ -20,7 +20,7 @@
   {
     "mode": "NULLABLE",
     "type": "STRING",
-    "name": "registry_number",
+    "name": "record_number",
     "description": "The vessel name."
   },
   {
