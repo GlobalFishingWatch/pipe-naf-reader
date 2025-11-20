@@ -82,5 +82,11 @@
     "type": "STRING",
     "name": "sequence_number",
     "description": "The sequence number of the message sent by the vessel (annual count)."
+  },
+  {
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "name": "provider",
+    "description": "The provider of the message."
   }
 ]
