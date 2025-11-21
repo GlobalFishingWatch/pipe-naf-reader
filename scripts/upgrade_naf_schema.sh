@@ -6,8 +6,7 @@ source ${THIS_SCRIPT_DIR}/pipeline.sh
 
 PROCESS=$(basename $0 .sh)
 ARGS=( BQ_TABLE_PREFIX \
-  START_DATE \
-  END_DATE )
+    DATE_RANGE )
 
 display_usage() {
     echo -e "Updates the schema of every NAF BigQuery sharded table for a given date range to the current schema.\n"
@@ -15,8 +14,7 @@ display_usage() {
     echo -e "Additionally, it will set labels to the table indicating the component and version of the pipe_naf_reader package used.\n"
     echo -e "\nUsage:\n${PROCESS}.sh ${ARGS[*]}\n"
     echo -e "\tBQ_TABLE_PREFIX: The fully qualified table name prefix (project.dataset.table_prefix)."
-    echo -e "\tSTART_DATE: The start date in format YYYY-MM-DD."
-    echo -e "\tEND_DATE: The end date in format YYYY-MM-DD."
+    echo -e "\tDATE_RANGE: Two dates separated by a comma (Format: YYYY-MM-DD,YYYY-MM-DD). Used to iterate over the tables."
     echo -e ""
 }
 
@@ -35,8 +33,8 @@ calculate_next_date() {
     fi
 }
 
-if [[ $# -ne ${#ARGS[@]} ]]
-then
+
+if [[ $# -ne ${#ARGS[@]} ]]; then
     display_usage
     exit 1
 fi
@@ -48,6 +46,14 @@ for index in ${!ARGS[*]}; do
   declare "${ARGS[$index]}"="${arg_values[$index]}"
 done
 
+# Parse DATE_RANGE into START_DATE and END_DATE
+IFS=',' read -r START_DATE END_DATE <<< "$DATE_RANGE"
+if [[ -z "$START_DATE" || -z "$END_DATE" ]]; then
+    display_error "DATE_RANGE must be two dates separated by a comma (YYYY-MM-DD,YYYY-MM-DD)"
+    display_usage
+    exit 1
+fi
+
 BQ_PATTERN="^[a-zA-Z0-9_\-]+[\.:][a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+$"
 if [[ "${BQ_TABLE_PREFIX}" =~ ${BQ_PATTERN} ]]; then
   # if colon punctuation is not present replace only the first dot with colon punctuation.
@@ -56,6 +62,7 @@ else
   display_error "Error passing the BQ_TABLE_PREFIX = ${BQ_TABLE_PREFIX} it should match the following pattern (${BQ_PATTERN})."
   exit 1
 fi
+
 
 # validate that start_date and end_date are in the correct format YYYY-MM-DD 
 # and that start_date is less than or equal to end_date
