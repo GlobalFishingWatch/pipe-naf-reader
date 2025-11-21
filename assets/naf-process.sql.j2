@@ -30,4 +30,6 @@ SELECT
   SQ as sequence_number,
   PV as provider,
 FROM
-  `{{ source }}`
+  `{{ source }}_*`
+WHERE
+  _TABLE_SUFFIX BETWEEN '{{ start_date }}' AND '{{ end_date }}'
