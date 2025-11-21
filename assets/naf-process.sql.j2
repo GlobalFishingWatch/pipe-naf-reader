@@ -1,0 +1,33 @@
+SELECT
+  PARSE_TIMESTAMP(
+    CONCAT(
+      -- get date format based on length of DA field
+      case
+        when length(DA) = 6 then '%y%m%d'
+        else '%Y%m%d'
+      end,
+
+      -- get time format based on length of TI field
+      case
+        when length(TI) = 4 then '%k%M'
+        else '%k%M%S'
+      end
+    ),
+    CONCAT(DA,TI)
+  ) as timestamp,
+  RC AS callsign,
+  NA AS shipname,
+  RN AS record_number,
+  IR AS internal_id,
+  XR AS external_id,
+  CAST(LT AS FLOAT64) lat,
+  CAST(LG AS FLOAT64) lon,
+  CAST(SP AS FLOAT64) speed,
+  CAST(CO AS FLOAT64) course,
+  FS AS flag,
+  IM as imo,
+  ID as transmitter_id,
+  SQ as sequence_number,
+  PV as provider,
+FROM
+  `{{ source }}`

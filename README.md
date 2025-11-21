@@ -11,7 +11,7 @@ This repo is responsable for reading each `NAF` message of a country and parsing
 
 The NAF Parser generates a CSV that contains all positional messages for all messages in a source folder. The CSV needs to have a first row the name of the attributes.
 
-The explanation of each field in a NAF format is explaned in the [defaul schema](https://github.com/GlobalFishingWatch/pipe-naf-reader/blob/master/assets/naf-default-schema.json)
+The explanation of each field in a NAF format is explaned in the [defaul schema](https://github.com/GlobalFishingWatch/pipe-naf-reader/blob/master/assets/naf-schema.json)
 
 The parser will adjust the header related to the `NAF` message, if not will throw an error:
 For example for:

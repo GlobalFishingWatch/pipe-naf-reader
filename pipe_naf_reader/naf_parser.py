@@ -1,151 +1,152 @@
 """
-The NAF Parser generates a CSV that contains all positional messages for all messages in a source folder. The CSV needs to have a first row the name of the attributes.
+The NAF Parser generates a CSV that contains all positional messages for all
+messages in a source folder. The CSV needs to have a first row the name of the
+attributes.
 
 
-The explanation of each field in a NAF format will be
-    SR starts of the message
-    AD name of the source (PAN for PANAMA, FR for FRANCIA)
-    TM transmission method
-    NA name of the vessel
-    IR internal registry
-    RC radio letter
-    XR IMO number (for local vessels some are repeated in radio letter, because these do not have IMO)
-    DA date (YYMMDD)
-    TI time (hh:mm)
-    LT latitude
-    LG longitude
-    SP speed (#.#)
-    CO course
-    FS flag
-    ER end of message transmission
+The explanation of each field in a NAF forma
+can be found in https://www.naf-format.org/field-codes.htm
+The `SR` (starts of the message) and `ER` (end of message transmission)
+are the limits of the NAF message.
 
 For example for:
-    //SR//AD/PAN//FR/PAN//TM/POS//NA/MEGA 811//IR/47083-PEXT//RC/HP4077//XR/8523632//DA/190515//TI/1151//LT/-20.860//LG/-100.274//FS/PAN//RN/320491//ER
+    //SR//AD/PAN//FR/PAN//TM/POS//NA/MEGA 811//IR/47083-PEXT//RC/HP4077//XR/8523632//DA/190515//TI/1151//LT/-20.860//LG/-100.274//FS/PAN//RN/320491//ER  # noqa: E501
 
 The first line of the CSV will be:
     AD,TM,NA,IR,RC,XR,DA,TI,LT,LG,SP,CO,FS
 
 """
-from datetime import datetime
+
 import argparse
 import csv
 import json
 import logging
-import os.path
 import sys
 import time
 
-"""Process a NAF input strams and converts it to a CSV file."""
-class NAFParser():
 
-    """
-    Receives a list of entries and returns a header and row array.
+logger = logging.getLogger(__name__)
+NAF_SCHEMA = "./assets/naf-schema.json"
+START_RECORD = "SR"
+END_RECORD = "ER"
 
-    :@param entries: list of lines of CSV file.
-    :@type entries: list.
-    :@returns: the header list and the row dict.
-    """
+
+class NAFParser:
+    """Process a NAF input stream and converts it to a CSV file."""
+
     def parse(self, entries):
-        start=False
-        end=False
-        header=[]
-        row={}
+        """
+        Receives a list of entries and returns a header and row array.
+
+        :@param entries: list of lines of CSV file.
+        :@type entries: list.
+        :@returns: the header list and the row dict.
+        """
+        start = False
+        end = False
+        header = []
+        row = {}
         for entry in entries:
-                pair=entry.split('/')
-                if pair[0]=='ER':
-                        end=True
-                if start and not end:
-                        label = pair[0]
-                        header.append(label)
-                        row[label] = self.normalize_value(label, pair[1])
-                if pair[0]=='SR':
-                        start=True
-        return header,row
+            pair = entry.split("/")
+            if pair[0] == END_RECORD:
+                end = True
+            if start and not end:
+                label = pair[0]
+                header.append(label)
+                row[label] = self.normalize_value(label, pair[1])
+            if pair[0] == START_RECORD:
+                start = True
+        return header, row
 
-    """
-    Normalizes the value.
-
-    :@param label: The label or column name.
-    :@type label: str.
-    :@param value: The value of the row.
-    :@type value: str.
-    :@return: the normalized value.
-    """
     def normalize_value(self, label, value):
+        """
+        Normalizes the value.
+
+        :@param label: The label or column name.
+        :@type label: str.
+        :@param value: The value of the row.
+        :@type value: str.
+        :@return: the normalized value.
+        """
         return value
 
-    """
-    Loads the customized schema and prepares the csv writer object.
+    def _get_header_from_schema(self, output_stream):
+        """
+        Returns the csv.DictWriter and the header list from the schema.
 
-    :@param name: The country name.
-    :@type name: str.
-    :@param output_stream: The stream where to output the CSV info.
-    :@type output_stream: str.
-    :@return: The csv writer object.
-    """
-    def _loads_customized_schema(self, name, output_stream):
+        :@param output_stream: The stream where to output the CSV info.
+        :@type output_stream: IO.
+        :@return: Tuple[csv.DictWriter, List[str]]
+            first: the csv writer.
+            second: the header list.
+        """
         csv_writer = None
-        #Reads custom schema in case it exists
-        customized_schema_path = './assets/{}.json'.format(name)
         header = []
-        if os.path.isfile(customized_schema_path):
-            with open(customized_schema_path) as customized_schema:
-                schema_fields = json.load(customized_schema)
-                for schema_field in schema_fields:
-                    header.append(schema_field['name'])
-            csv_writer = csv.DictWriter(output_stream, fieldnames=header, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-            csv_writer.writeheader()
-            logging.info("  Reading the headers from customized schema {}".format(customized_schema_path))
+        with open(NAF_SCHEMA) as schema:
+            schema_fields = json.load(schema)
+            for schema_field in schema_fields:
+                header.append(schema_field["name"])
+        csv_writer = csv.DictWriter(
+            output_stream,
+            fieldnames=header,
+            delimiter=",",
+            quotechar='"',
+            quoting=csv.QUOTE_MINIMAL,
+        )
+        csv_writer.writeheader()
+        logger.info(f"  Reading the headers from schema {NAF_SCHEMA}")
         return csv_writer, header
 
+    def process(self, input_stream, output_stream):
+        """
+        Processes the NAF input_stream and outputs the CSV stream.
 
-    """
-    Processes the NAF input_stream and outputs the CSV stream.
-
-    :@param name: The country name.
-    :@type name: str.
-    :@param input_stream: The NAF data or stdin.
-    :@type input_stream: file.
-    :@param output_stream: The CSV file or stdout.
-    :@type output_stream: file.
-    """
-    def process(self, name, input_stream, output_stream):
-        # with open(output_file, "wb+") as f:
-        csv_writer, expectedHeader = self._loads_customized_schema(name, output_stream)
+        :@param input_stream: The NAF data or stdin.
+        :@type input_stream: file.
+        :@param output_stream: The CSV file or stdout.
+        :@type output_stream: file.
+        """
+        # Load headers from NAF SCHEMA
+        csv_writer, schema_headers = self._get_header_from_schema(output_stream)
 
         for line in input_stream:
             stripped_line = line.strip()
             try:
-                if len(stripped_line.split('///'))>1:
-                    logging.warn(f"There are empty fields in line {stripped_line}")
-                    splitted = stripped_line.rsplit('//')
+                if len(stripped_line.split("///")) > 1:
+                    logger.warn(f"There are empty fields in line {stripped_line}")
+                    splitted = stripped_line.rsplit("//")
                 else:
-                    splitted = stripped_line.split('//')
+                    splitted = stripped_line.split("//")
                 header, row = self.parse(splitted)
-                if csv_writer is None:
-                    csv_writer = csv.DictWriter(output_stream, fieldnames=(expectedHeader if (expectedHeader!=[]) else header), delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-                    csv_writer.writeheader()
-                if row:
-                    if expectedHeader != []:
-                        list(map(lambda y: row.pop(y,None), filter(lambda x: x not in expectedHeader, header)))
+
+                if row is not None:
+                    # If a header is not in the schema_headers it's removed
+                    # from the row keys to make it compatible with the schema
+                    list(
+                        map(
+                            lambda y: row.pop(y, None),
+                            filter(lambda x: x not in schema_headers, header),
+                        )
+                    )
                     csv_writer.writerow(row)
             except Exception as err:
-                logging.error(err)
-                logging.error("Unable to convert NAF message to csv row at {}".format(stripped_line))
-                #if it is not valid just exclude it.
-                exit(1)
-            except:
-                logging.error('There was an error parsing the line <{}>', stripped_line)
+                logger.error(err)
+                logger.error(f"Unable to convert NAF message to csv row at {stripped_line}")
+                # if it is not valid just exclude it.
                 exit(1)
 
-#-------------- MAIN RECEPTION --------------------
 
-if __name__ == '__main__':
-    # start_time = time.time()
-    parser = argparse.ArgumentParser(description='Parses NAF messages uploads to GCS and BQ.')
-    parser.add_argument('--name', help='The country name.', required=True)
-    parser.add_argument('--input_stream', help='NAF message input', required=False if not sys.stdin.isatty() else True)
-    parser.add_argument('--output_stream', help='CSV file output', required=False)
+# -------------- MAIN RECEPTION --------------------
+
+if __name__ == "__main__":
+    start_time = time.time()
+    parser = argparse.ArgumentParser(description="Parses NAF messages uploads to GCS and BQ.")
+    parser.add_argument(
+        "--input_stream",
+        help="NAF message input",
+        required=False if not sys.stdin.isatty() else True,
+    )
+    parser.add_argument("--output_stream", help="CSV file output", required=False)
     args = parser.parse_args()
 
     if args.input_stream is None:
@@ -155,4 +156,4 @@ if __name__ == '__main__':
 
     naf_parser = NAFParser()
     naf_parser.process(**vars(args))
-    # print("Execution time {0} minutes".format((time.time()-start_time)/60))
+    logger.info(f"Execution time {(time.time()-start_time)/60} minutes")

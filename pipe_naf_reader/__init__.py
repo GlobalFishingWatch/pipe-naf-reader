@@ -1,5 +1,6 @@
 """
-Micro pipeline that parses the NAF messages from countries that handles vessel information with NAF format
+Micro pipeline that parses the NAF messages from countries that handles vessel
+information with NAF format
 """
 
 __version__ = '4.0.0'
