@@ -178,6 +178,7 @@ python3 -c "import importlib, importlib.util; m = importlib.import_module('impor
 # make the package version compatible with bq label requirements
 PACKAGE_VERSION=${PACKAGE_VERSION//[^a-zA-Z0-9_\-]/_}
 
+# Upload to BigQuery
 bq load \
   --field_delimiter "," \
   --skip_leading_rows 1 \
@@ -192,6 +193,7 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 
+# set the table label component to the current package name and version
 bq update \
     --set_label="component:pipe_naf_reader" \
     --set_label="version:$PACKAGE_VERSION" \
