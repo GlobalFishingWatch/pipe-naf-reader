@@ -36,7 +36,38 @@ done
 
 GCS_DATE_SOURCE=${GCS_SOURCE}/${DS}
 ################################################################################
-# Download files locally
+# Prepare GCS CSV path and check if processing can be skipped
+################################################################################
+GCS_CSV_FILE=${GCS_CSV_OUTPUT}/${DS}.csv
+
+# If the CSV exists and is newer or equal than the most recent source file, skip the section.
+SKIP_PROCESSING=0
+if gsutil -q stat "${GCS_CSV_FILE}" 2>/dev/null; then
+  echo "Found existing CSV at ${GCS_CSV_FILE}. Checking timestamps..."
+  csv_ts=$(gsutil ls -l "${GCS_CSV_FILE}" 2>/dev/null | grep -E 'gs://' | awk '{print $2}')
+  # Get the most recent timestamp among the files under the source path
+  latest_src_ts=$(gsutil ls -l "${GCS_DATE_SOURCE}"/* 2>/dev/null | grep -E 'gs://' | awk '{print $2}' | sort -r | head -n1)
+
+  if [ -z "${latest_src_ts}" ]; then
+    echo "  No source files found in ${GCS_DATE_SOURCE}. Will skip processing."
+    SKIP_PROCESSING=1
+  else
+    # ISO 8601 timestamps compare lexicographically
+    if [[ "${csv_ts}" > "${latest_src_ts}" ]]; then
+      echo "  Remote CSV (${csv_ts}) is newer than latest source file (${latest_src_ts}). Skipping processing."
+      SKIP_PROCESSING=1
+    else
+      echo "  Remote CSV (${csv_ts}) is older than latest source file (${latest_src_ts}). Proceeding with processing."
+    fi
+  fi
+else
+  echo "No existing CSV at ${GCS_CSV_FILE}. Proceeding with processing."
+fi
+
+if [[ ${SKIP_PROCESSING} -ne 1 ]]; then
+
+  ################################################################################
+  # Download files locally
 ################################################################################
 LOCAL_RAW_NAF_PATH=./data/raw_naf
 echo "Downloading records from source ${GCS_DATE_SOURCE} to local disk ${LOCAL_RAW_NAF_PATH}"
@@ -98,7 +129,6 @@ echo "  Coverted records from NAF to CSV"
 ################################################################################
 # Uploads local csv files to GCS
 ################################################################################
-GCS_CSV_FILE=${GCS_CSV_OUTPUT}/${DS}.csv
 echo "Uploads local CSV ${LOCAL_CSV_FILE} to remote path ${GCS_CSV_FILE}"
 gsutil cp ${LOCAL_CSV_FILE} ${GCS_CSV_FILE}
 if [ "$?" -ne 0 ]; then
@@ -107,11 +137,11 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 echo "  Uploaded CSV file to ${GCS_CSV_FILE}"
+fi # end SKIP_PROCESSING conditional
 
 ################################################################################
 # Uploads from GCS to Big Query
 ################################################################################
-echo "Uploads CSV file in remote location ${GCS_CSV_FILE}"
 BQ_OUTPUT_PATH=${BQ_OUTPUT}_${DS//-/}
 BQ_PATTERN="^[a-zA-Z0-9_\-]+[\.:][a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+$"
 if [[ "${BQ_OUTPUT_PATH}" =~ ${BQ_PATTERN} ]]; then
@@ -122,6 +152,7 @@ else
   exit 1
 fi
 SCHEMA=${ASSETS}/naf-schema.json
+echo "Loads BQ table ${BQ_OUTPUT_COLON} from CSV file ${GCS_CSV_FILE}"
 bq load \
   --field_delimiter "," \
   --skip_leading_rows 1 \
