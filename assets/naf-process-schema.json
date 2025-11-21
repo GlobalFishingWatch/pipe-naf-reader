@@ -87,6 +87,6 @@
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "provider",
-    "description": "Name of the device and satellite network provider of the message."
+    "description": "Name of the device and satellite network provider of the vessel."
   }
 ]
