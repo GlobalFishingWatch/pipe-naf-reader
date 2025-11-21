@@ -54,7 +54,7 @@ echo "${SQL}" | bq query \
     --destination_schema ${ASSETS}/naf-process-schema.json \
     --destination_table ${BQ_OUTPUT_COLON} \
     --time_partitioning_field timestamp \
-    --clustering_fields shipname,callsign,registry_number
+    --clustering_fields shipname,callsign,external_id
 
 if [ "$?" -ne 0 ]; then
   echo "  Unable to create table ${BQ_OUTPUT_COLON}"
