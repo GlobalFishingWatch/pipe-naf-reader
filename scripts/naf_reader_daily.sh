@@ -170,6 +170,14 @@ if [[ "${REPLACE}" == "replace" ]]; then
 else
   REPLACE_ARG=""
 fi
+
+# get the current package version and store in a variable
+PACKAGE_VERSION=$(
+python3 -c "import importlib, importlib.util; m = importlib.import_module('importlib.metadata' if importlib.util.find_spec('importlib.metadata') else 'importlib_metadata'); print(m.version('pipe_naf_reader'))"
+)
+# make the package version compatible with bq label requirements
+PACKAGE_VERSION=${PACKAGE_VERSION//[^a-zA-Z0-9_\-]/_}
+
 bq load \
   --field_delimiter "," \
   --skip_leading_rows 1 \
@@ -182,5 +190,14 @@ if [ "$?" -ne 0 ]; then
   echo "  Unable to upload to BigQuery ${BQ_OUTPUT_COLON}"
   display_usage
   exit 1
+fi
+
+bq update \
+    --set_label="component:pipe_naf_reader" \
+    --set_label="version:$PACKAGE_VERSION" \
+    "$BQ_OUTPUT_COLON"
+if [ "$?" -ne 0 ]; then
+    echo "  Failed to set labels for table: $BQ_OUTPUT_COLON"
+    exit 1
 fi
 echo "  Uploaded to BigQuery in table ${BQ_OUTPUT_COLON}"
