@@ -21,7 +21,7 @@
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "record_number",
-    "description": "The vessel name."
+    "description": "Serial number of retransmission of the message/report by the FMC (annual count)"
   },
   {
     "mode": "NULLABLE",
@@ -87,6 +87,6 @@
     "mode": "NULLABLE",
     "type": "STRING",
     "name": "provider",
-    "description": "The provider of the message."
+    "description": "Name of the device and satellite network provider of the message."
   }
 ]
