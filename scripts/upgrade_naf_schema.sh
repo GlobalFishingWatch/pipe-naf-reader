@@ -2,6 +2,7 @@
 
 THIS_SCRIPT_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )"
 ASSETS=${THIS_SCRIPT_DIR}/../assets
+source ${THIS_SCRIPT_DIR}/pipeline.sh
 
 PROCESS=$(basename $0 .sh)
 ARGS=( BQ_TABLE_PREFIX \
@@ -56,13 +57,6 @@ else
   exit 1
 fi
 
-# get the current package version and store in a variable
-PACKAGE_VERSION=$(
-python3 -c "import importlib, importlib.util; m = importlib.import_module('importlib.metadata' if importlib.util.find_spec('importlib.metadata') else 'importlib_metadata'); print(m.version('pipe_naf_reader'))"
-)
-# make the package version compatible with bq label requirements
-PACKAGE_VERSION=${PACKAGE_VERSION//[^a-zA-Z0-9_\-]/_}
-
 # validate that start_date and end_date are in the correct format YYYY-MM-DD 
 # and that start_date is less than or equal to end_date
 date -d "$START_DATE" +"%Y-%m-%d" >/dev/null 2>&1
@@ -88,12 +82,11 @@ CURRENT_DATE="$START_DATE"
 END_DATE_PLUS_ONE=$(calculate_next_date "$END_DATE")
 while [ "$CURRENT_DATE" != "$END_DATE_PLUS_ONE" ]; do
     BQ_TABLE="${BQ_TABLE_PREFIX}_$(echo $CURRENT_DATE | tr -d '-')"
-    echo "Updating schema for table: $BQ_TABLE with package version: $PACKAGE_VERSION"
+    echo "Updating schema for table: $BQ_TABLE with package version: $PIPELINE_VERSION"
     # set the table label component to the current package name and version
     bq update \
         --schema=$ASSETS/naf-schema.json \
-        --set_label="component:pipe_naf_reader" \
-        --set_label="version:$PACKAGE_VERSION" \
+        $(for label in "${LABELS[@]}"; do echo "--set_label=${label} "; done) \
         "$BQ_TABLE"
     if [ "$?" -ne 0 ]; then
         echo "  Failed to update schema for table: $BQ_TABLE"

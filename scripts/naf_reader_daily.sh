@@ -171,13 +171,6 @@ else
   REPLACE_ARG=""
 fi
 
-# get the current package version and store in a variable
-PACKAGE_VERSION=$(
-python3 -c "import importlib, importlib.util; m = importlib.import_module('importlib.metadata' if importlib.util.find_spec('importlib.metadata') else 'importlib_metadata'); print(m.version('pipe_naf_reader'))"
-)
-# make the package version compatible with bq label requirements
-PACKAGE_VERSION=${PACKAGE_VERSION//[^a-zA-Z0-9_\-]/_}
-
 # Upload to BigQuery
 bq load \
   --field_delimiter "," \
@@ -193,10 +186,9 @@ if [ "$?" -ne 0 ]; then
   exit 1
 fi
 
-# set the table label component to the current package name and version
+# set the table labels defined in the pipeline.sh
 bq update \
-    --set_label="component:pipe_naf_reader" \
-    --set_label="version:$PACKAGE_VERSION" \
+    $(for label in "${LABELS[@]}"; do echo "--set_label=${label} "; done) \
     "$BQ_OUTPUT_COLON"
 if [ "$?" -ne 0 ]; then
     echo "  Failed to set labels for table: $BQ_OUTPUT_COLON"
