@@ -90,6 +90,15 @@ END_DATE_PLUS_ONE=$(calculate_next_date "$END_DATE")
 while [ "$CURRENT_DATE" != "$END_DATE_PLUS_ONE" ]; do
     BQ_TABLE="${BQ_TABLE_PREFIX}_$(echo $CURRENT_DATE | tr -d '-')"
     echo "Updating schema for table: $BQ_TABLE with package version: $PIPELINE_VERSION"
+
+    # ensure that the table exists before updating the schema
+    bq show "$BQ_TABLE" >/dev/null 2>&1
+    if [ "$?" -ne 0 ]; then
+        echo "  Table $BQ_TABLE does not exist. Skipping."
+        CURRENT_DATE=$(calculate_next_date "$CURRENT_DATE")
+        continue
+    fi
+    
     # set the table label component to the current package name and version
     bq update \
         --schema=$ASSETS/naf-schema.json \
