@@ -15,7 +15,7 @@ display_usage() {
   echo -e "\nUsage:\n${PROCESS}.sh ${ARGS[*]}\n"
   echo -e "BQ_INPUT: BigQuery dataset and table where the input is already stored (Format expected <DATASET>.<TABLE>).\n"
   echo -e "BQ_OUTPUT: BigQuery dataset and table where will be stored the output (Format expected <DATASET>.<TABLE>).\n"
-  echo -e "DATE_RANGE: Two dates separated by a comma (Format: YYYY-MM-DD,YYYY-MM-DD). Used to filter _TABLE_SUFFIX in the query.\n"
+  echo -e "DATE_RANGE: Two dates separated by a comma (Format: YYYY-MM-DD,YYYY-MM-DD). Used to filter _TABLE_SUFFIX in the query. START_DATE is inclusive, END_DATE is exclusive.\n"
 }
 
 if [[ $# -ne ${#ARGS[@]} ]]
