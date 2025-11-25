@@ -117,3 +117,5 @@ data/
 .pytest_cache/
 
 .terraform*
+
+tmp
