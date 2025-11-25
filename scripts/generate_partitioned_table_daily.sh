@@ -43,8 +43,7 @@ fi
 START_DATE=${START_DATE//-/}
 END_DATE=${END_DATE//-/}
 
-# BQ_INPUT_PATH=${BQ_INPUT}_${DS//-/}
-# BQ_PATTERN="^[a-zA-Z0-9_\-]+[\.:][a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+$"
+BQ_PATTERN="^[a-zA-Z0-9_\-]+[\.:][a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+$"
 if [[ "${BQ_OUTPUT}" =~ ${BQ_PATTERN} ]]; then
   # if colon punctuation is not present replace only the first dot with colon punctuation.
   BQ_OUTPUT_COLON=$(if [[ ${BQ_OUTPUT} != *":"*  ]]; then echo ${BQ_OUTPUT/./:}; else echo ${BQ_OUTPUT}; fi)
