@@ -5,8 +5,7 @@ ASSETS=${THIS_SCRIPT_DIR}/../assets
 source ${THIS_SCRIPT_DIR}/pipeline.sh
 
 PROCESS=$(basename $0 .sh)
-ARGS=( BQ_TABLE_PREFIX \
-    DATE_RANGE )
+ARGS=( BQ_TABLE_PREFIX )
 
 display_usage() {
     echo -e "Updates the schema of every NAF BigQuery sharded table for a given date range to the current schema.\n"
@@ -14,23 +13,11 @@ display_usage() {
     echo -e "Additionally, it will set labels to the table indicating the component and version of the pipe_naf_reader package used.\n"
     echo -e "\nUsage:\n${PROCESS}.sh ${ARGS[*]}\n"
     echo -e "\tBQ_TABLE_PREFIX: The fully qualified table name prefix (project.dataset.table_prefix)."
-    echo -e "\tDATE_RANGE: Two dates separated by a comma (Format: YYYY-MM-DD,YYYY-MM-DD). Used to iterate over the tables."
     echo -e ""
 }
 
 display_error() {
     echo -e "\nError: $1\n"
-}
-
-calculate_next_date() {
-    local current_date="$1"
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS
-        date -j -f "%Y-%m-%d" -v+1d "$current_date" +"%Y-%m-%d"
-    else
-        # Linux and other Unix-like systems
-        date -I -d "$current_date + 1 day"
-    fi
 }
 
 
@@ -46,13 +33,6 @@ for index in ${!ARGS[*]}; do
   declare "${ARGS[$index]}"="${arg_values[$index]}"
 done
 
-# Parse DATE_RANGE into START_DATE and END_DATE
-IFS=',' read -r START_DATE END_DATE <<< "$DATE_RANGE"
-if [[ -z "$START_DATE" || -z "$END_DATE" ]]; then
-    display_error "DATE_RANGE must be two dates separated by a comma (YYYY-MM-DD,YYYY-MM-DD)"
-    display_usage
-    exit 1
-fi
 
 BQ_PATTERN="^[a-zA-Z0-9_\-]+[\.:][a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+$"
 if [[ "${BQ_TABLE_PREFIX}" =~ ${BQ_PATTERN} ]]; then
@@ -64,41 +44,17 @@ else
 fi
 
 
-# validate that start_date and end_date are in the correct format YYYY-MM-DD 
-# and that start_date is less than or equal to end_date
-date -d "$START_DATE" +"%Y-%m-%d" >/dev/null 2>&1
-if [ "$?" -ne 0 ]; then
-    display_error "START_DATE is not in the correct format YYYY-MM-DD."
-    exit 1
-fi
-date -d "$END_DATE" +"%Y-%m-%d" >/dev/null 2>&1
-if [ "$?" -ne 0 ]; then
-    display_error "END_DATE is not in the correct format YYYY-MM-DD."
-    exit 1
-fi
-if [ "$(date -d "$START_DATE" +%s)" -gt "$(date -d "$END_DATE" +%s)" ]; then
-    display_error "START_DATE cannot be greater than END_DATE."
-    exit 1
-fi
-
 echo -e "\nRunning:\n${PROCESS}.sh $@ \n"
 
-CURRENT_DATE="$START_DATE"
+# Get list of all shard tables matching the table name to upgrade schema and store them in an array variable
+echo "Looking for tables with prefix '${BQ_TABLE_PREFIX}' that do not have version label '${LABELS_VERSION}'"
 
-# iterate over the dates from START_DATE to END_DATE (inclusive)
-END_DATE_PLUS_ONE=$(calculate_next_date "$END_DATE")
-while [ "$CURRENT_DATE" != "$END_DATE_PLUS_ONE" ]; do
-    BQ_TABLE="${BQ_TABLE_PREFIX}_$(echo $CURRENT_DATE | tr -d '-')"
-    echo "Updating schema for table: $BQ_TABLE with package version: $PIPELINE_VERSION"
-
-    # ensure that the table exists before updating the schema
-    bq show "$BQ_TABLE" >/dev/null 2>&1
-    if [ "$?" -ne 0 ]; then
-        echo "  Table $BQ_TABLE does not exist. Skipping."
-        CURRENT_DATE=$(calculate_next_date "$CURRENT_DATE")
-        continue
-    fi
-    
+SHARD_TABLES=($(python $THIS_SCRIPT_DIR/tables_to_upgrade.py --table_prefix "$BQ_TABLE_PREFIX" --labels_version "$LABELS_VERSION"))
+if [ ${#SHARD_TABLES[@]} -eq 0 ]; then
+    echo "No tables found to upgrade schema."
+    exit 0
+fi
+for BQ_TABLE in "${SHARD_TABLES[@]}"; do
     # set the table label component to the current package name and version
     bq update \
         --schema=$ASSETS/naf-schema.json \
@@ -108,7 +64,4 @@ while [ "$CURRENT_DATE" != "$END_DATE_PLUS_ONE" ]; do
         echo "  Failed to update schema for table: $BQ_TABLE"
         exit 1
     fi
-
-    # Increment date by one day
-    CURRENT_DATE=$(calculate_next_date "$CURRENT_DATE")
 done
